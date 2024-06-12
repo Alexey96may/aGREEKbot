@@ -44,11 +44,13 @@ if (getGameMode() == "toGreek"){
 	$trueResp = $trueQuestion;
 	$trueQuestion = $templTrueResp;
 }
-if (array_key_exists("photo", $arrDataAnswer["message"]) || array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("sticker", $arrDataAnswer["message"])){
-	$respText = "Просьба отвечать текстом, $user_firstName!";
-} elseif (preg_match("/[Пп]ожелание.+/i", $textMessage)) {
+if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("sticker", $arrDataAnswer["message"])){
+	$respText = "Просьба отвечать текстом, $user_firstName.";
+} elseif (array_key_exists("photo", $arrDataAnswer["message"])) {
+	$respText = "Надеюсь, на фото ответ, $user_firstName. Но я понимаю только текст!";
+} elseif (preg_match("/^[Пп]ожелание.+/i", $textMessage) || preg_match("/^[Пп]редложение.+/i", $textMessage)) {
 	$respText = "Пожелание принято! Спасибо, $user_firstName!";
-	writeLogFile($textMessage, false, "/message.txt");
+	writeLogFile($user_firstName . ": " . $textMessage, false, "/message.txt");
 } elseif (preg_match("/^\*.+/i", $textMessage)) {
 	exit();
 } elseif (array_key_exists("new_chat_participant", $arrDataAnswer["message"])){
@@ -70,10 +72,12 @@ if (array_key_exists("photo", $arrDataAnswer["message"]) || array_key_exists("vo
 	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
 } elseif (preg_match("/game_hint/i", $textMessage) || preg_match("/[Пп]одсказка/i", $textMessage)) {
 	$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «" . $translArr[0]["base"]. "» — «". $translArr[0]["baseTransl"]. "».";
+} elseif (preg_match("/bot_info/i", $textMessage)) {
+	$respText = "Информация об игре: \nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «start_game».\n— взять подсказку команой «game_hint».\n— оставить пожелание для развития игры или бота, написав «пожелание» (или «предложение»), за которым следует текст вашего пожелания.\n—";
 } elseif (preg_match("/[Оо]твет/i", $textMessage)) {
 	$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
-} elseif (preg_match("/[Нн]е знаю/i", $textMessage)) {
-	$respText = "$user_firstName, подумай!";
+} elseif (preg_match("/[Нн]е знаю/i", $textMessage) || preg_match("/[Сс]даюсь/i", $textMessage)) {
+	$respText = "$user_firstName, подумайте ещё или смените вопрос командой «start_game».";
 } elseif (isContResp($trueResp, $textMessage)) {
 	array_shift($translArr);
 	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
