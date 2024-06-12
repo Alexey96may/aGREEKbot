@@ -34,70 +34,68 @@ if ($chatId == BOTID) {
 
 $respText = 'Текст';
 
+$translArr = respArrNow($chatId, $user_Id);
+		
+$trueResp = trim(mb_strtolower($translArr[0]["translation"]));
+$trueQuestion = trim(mb_strtolower($translArr[0]["word"]));
+
+if (getGameMode() == "toGreek"){
+	$templTrueResp = $trueResp;
+	$trueResp = $trueQuestion;
+	$trueQuestion = $templTrueResp;
+}
+if (array_key_exists("photo", $arrDataAnswer["message"]) || array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("sticker", $arrDataAnswer["message"])){
+	$respText = "Просьба отвечать текстом, $user_firstName!";
+} elseif (preg_match("/[Пп]ожелание.+/i", $textMessage)) {
+	$respText = "Пожелание принято! Спасибо, $user_firstName!";
+	writeLogFile($textMessage, false, "/message.txt");
+} elseif (preg_match("/^\*.+/i", $textMessage)) {
+	exit();
+} elseif (array_key_exists("new_chat_participant", $arrDataAnswer["message"])){
+	$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «" . $trueQuestion. "».";
+} elseif (array_key_exists("left_chat_participant", $arrDataAnswer["message"])){
+	$respText = "Пока, ".$arrDataAnswer["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
+} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/i", $textMessage)){
+	$respText = "Γεια σας, $user_firstName!";
+} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/i", $textMessage)){
+	$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «" . $trueQuestion. "».";
+} elseif (preg_match("/game_change/i", $textMessage)){
+	changeGameMode();
+	$translArr = randArr(readTTFile('/translTraining.txt'));
+	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
+	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
+} elseif (preg_match("/start_game/i", $textMessage)) {
+	$translArr = randArr(readTTFile('/translTraining.txt'));
+	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
+	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
+} elseif (preg_match("/game_hint/i", $textMessage) || preg_match("/[Пп]одсказка/i", $textMessage)) {
+	$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «" . $translArr[0]["base"]. "» — «". $translArr[0]["baseTransl"]. "».";
+} elseif (preg_match("/[Оо]твет/i", $textMessage)) {
+	$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
+} elseif (preg_match("/[Нн]е знаю/i", $textMessage)) {
+	$respText = "$user_firstName, подумай!";
+} elseif (isContResp($trueResp, $textMessage)) {
+	array_shift($translArr);
+	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
 	$translArr = respArrNow($chatId, $user_Id);
-			
-	$trueResp = trim(mb_strtolower($translArr[0]["translation"]));
-	$trueQuestion = trim(mb_strtolower($translArr[0]["word"]));
+	$respText = "Ура! \nПереведите слово: " . " «" . getTrueQw() . "».";
+} else {
+	writeLogFile($textMessage, false, "/log.txt");
+	$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «" . $trueQuestion. "».";
+}
 
-	if (getGameMode() == "toGreek"){
-		$templTrueResp = $trueResp;
-		$trueResp = $trueQuestion;
-		$trueQuestion = $templTrueResp;
-	}
-	if (array_key_exists("photo", $arrDataAnswer["message"]) || array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("sticker", $arrDataAnswer["message"])){
-		$respText = "Просьба отвечать текстом, $user_firstName!";
-	} elseif (preg_match("/^\*.+/i", $textMessage)) {
-		exit();
-	} elseif (array_key_exists("new_chat_participant", $arrDataAnswer["message"])){
-		$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «" . $trueQuestion. "».";
-	} elseif (array_key_exists("left_chat_participant", $arrDataAnswer["message"])){
-		$respText = "Пока, ".$arrDataAnswer["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
-	} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/i", $textMessage)){
-		$respText = "Γεια σας, $user_firstName!";
-	} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/i", $textMessage)){
-		$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «" . $trueQuestion. "».";
-	} elseif (preg_match("/game_change/i", $textMessage)){
-		changeGameMode();
-		$translArr = randArr(readTTFile('/translTraining.txt'));
-		reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-		$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
-	} elseif (preg_match("/start_game/i", $textMessage)) {
-		$translArr = randArr(readTTFile('/translTraining.txt'));
-		reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-		$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
-	} elseif (preg_match("/game_hint/i", $textMessage) || preg_match("/[Пп]одсказка/i", $textMessage)) {
-		$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «" . $translArr[0]["base"]. "» — «". $translArr[0]["baseTransl"]. "».";
-	} elseif (preg_match("/[Оо]твет/i", $textMessage)) {
-		$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
-	} elseif (preg_match("/[Нн]е знаю/i", $textMessage)) {
-		$respText = "$user_firstName, подумай!";
-	} elseif (isContResp($trueResp, $textMessage)) {
-		array_shift($translArr);
-		reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-		$translArr = respArrNow($chatId, $user_Id);
-		$respText = "Ура! \nПереведите слово: " . " «" . getTrueQw() . "».";
-	} else {
-		writeLogFile($data, false);
-		$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «" . $trueQuestion. "».";
-	}
-	
-	$getQuery = array(
-		'chat_id' 		=> $chatId,
-		'text'			=> $respText,
-		'parse_mode'	=> "html",
-	);
-	
-	TG_sendMessage($getQuery, BOTTOKEN);
+$getQuery = array(
+	'chat_id' 		=> $chatId,
+	'text'			=> $respText,
+	'parse_mode'	=> "html",
+);
 
-
+TG_sendMessage($getQuery);
 
 //Функции
-
-
-
 //для записи логов недоработанных вопросов
-function writeLogFile($string, $clear = false){
-    $log_file_name = TEMPL_PREFIX."/message.txt";
+function writeLogFile($string, $clear = false, $fileName){
+    $log_file_name = TEMPL_PREFIX.$fileName;
     if($clear == false) {
 		$now = date("Y-m-d H:i:s");
 		file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND);
@@ -171,7 +169,6 @@ function respArrNow($chatId, $user_Id) {
 	}
 
 }
-
 
 //узнать мод игры
 function getGameMode(){
