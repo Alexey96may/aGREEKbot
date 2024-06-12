@@ -3,6 +3,9 @@
 //token from another file
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
 
+//template file prefix
+define("TEMPL_PREFIX", __DIR__."/temp");
+
 //Ключ доступа сообщества
 define("BOTTOKEN", $secretToken);
 define("BOTID", "5687000457");
@@ -17,14 +20,14 @@ $user_firstName = $arrDataAnswer["message"]["from"]["first_name"];
 $user_lastName = $arrDataAnswer["message"]["from"]["last_name"];
 
 if ($chatId == BOTID) {
-	if (!file_exists(__DIR__."/settings_"."user".$user_Id.".txt")) {
-		file_put_contents(__DIR__."/settings_"."user".$user_Id.".txt", '[]');
+	if (!file_exists(TEMPL_PREFIX."/settings_"."user".$user_Id.".txt")) {
+		file_put_contents(TEMPL_PREFIX."/settings_"."user".$user_Id.".txt", '[]');
 		changeGameMode("toRus");
 	}
 } else {
-	if (!file_exists(__DIR__."/settings_"."chat".$resultChatId.".txt")) {
+	if (!file_exists(TEMPL_PREFIX."/settings_"."chat".$resultChatId.".txt")) {
 		$resultChatId = substr($chatId, 1);
-		file_put_contents(__DIR__."/settings_"."chat".$resultChatId.".txt", '[]');
+		file_put_contents(TEMPL_PREFIX."/settings_"."chat".$resultChatId.".txt", '[]');
 		changeGameMode("toRus");
 	}
 }
@@ -55,11 +58,11 @@ $respText = 'Текст';
 		$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «" . $trueQuestion. "».";
 	} elseif (preg_match("/game_change/i", $textMessage)){
 		changeGameMode();
-		$translArr = randArr(readTTFile('translTraining.txt'));
+		$translArr = randArr(readTTFile('/translTraining.txt'));
 		reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
 		$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
 	} elseif (preg_match("/start_game/i", $textMessage)) {
-		$translArr = randArr(readTTFile('translTraining.txt'));
+		$translArr = randArr(readTTFile('/translTraining.txt'));
 		reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
 		$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
 	} elseif (preg_match("/game_hint/i", $textMessage) || preg_match("/[Пп]одсказка/i", $textMessage)) {
@@ -94,7 +97,7 @@ $respText = 'Текст';
 
 //для записи логов недоработанных вопросов
 function writeLogFile($string, $clear = false){
-    $log_file_name = __DIR__."/message.txt";
+    $log_file_name = TEMPL_PREFIX."/message.txt";
     if($clear == false) {
 		$now = date("Y-m-d H:i:s");
 		file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND);
@@ -108,10 +111,10 @@ function writeLogFile($string, $clear = false){
 //для записи копии файла вопросов
 function reWriteTTCopyFile($string, $chatId, $user_Id){
 	if ($chatId == BOTID) {
-		$log_file_name = __DIR__."/translTraining_copy"."user".$user_Id.".txt";
+		$log_file_name = TEMPL_PREFIX."/translTraining_copy"."user".$user_Id.".txt";
 	} else {
 		$resultChatId = substr($chatId, 1);
-		$log_file_name = __DIR__."/translTraining_copy"."chat".$resultChatId.".txt";
+		$log_file_name = TEMPL_PREFIX."/translTraining_copy"."chat".$resultChatId.".txt";
 	}
 	file_put_contents($log_file_name, '');
 	file_put_contents($log_file_name, print_r($string, true), FILE_APPEND);
@@ -119,7 +122,7 @@ function reWriteTTCopyFile($string, $chatId, $user_Id){
 
 //для чтения файла вопросов в массив
 function readTTFile($filename){
-	$ttArray = json_decode(file_get_contents(__DIR__.'/'.$filename), true);
+	$ttArray = json_decode(file_get_contents(TEMPL_PREFIX.$filename), true);
 	return $ttArray;
 }
 
@@ -159,8 +162,8 @@ function respArrNow($chatId, $user_Id) {
 		$filePath = "/translTraining_copy"."chat".$resultChatId.".txt";
 	}
 
-	if (file_get_contents(__DIR__.$filePath) == "[]") {
-		$translArr = randArr(readTTFile('translTraining.txt'));
+	if (file_get_contents(TEMPL_PREFIX.$filePath) == "[]") {
+		$translArr = randArr(readTTFile('/translTraining.txt'));
 		reWriteTTCopyFile(json_encode($translArr));
 		return $translArr;
 	} else {
@@ -199,8 +202,8 @@ function changeGameMode(){
 	} else {
 		$chatSettingArr["gameMod"] = "toRus";
 	}
-	file_put_contents(__DIR__.$file_ChatSetting, '');
-	file_put_contents(__DIR__.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND);
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '');
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND);
 	return $chatSettingArr["gameMod"];
 }
 
