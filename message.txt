@@ -1,0 +1,157 @@
+ {"update_id":257799959,
+"message":{"message_id":12,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4212718076,"title":"aGreekTranslationTraining","type":"group","all_members_are_administrators":true},"date":1717845497,"reply_to_message":{"message_id":10,"from":{"id":7448198434,"is_bot":true,"first_name":"aGreekBot","username":"aGreekBot"},"chat":{"id":-4212718076,"title":"aGreekTranslationTraining","type":"group","all_members_are_administrators":true},"date":1717844547,"text":"\u041d\u043e\u0432\u043e\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0438\u0437 \u0444\u043e\u0440\u043c\u044b"},"text":"cvvc"}}
+2024-06-08 11:47:44 
+2024-06-08 11:47:56 
+2024-06-08 11:48:07 
+2024-06-08 11:49:06 
+2024-06-08 11:49:11 
+2024-06-08 11:50:44 
+2024-06-08 11:51:58 
+2024-06-08 11:56:14 
+2024-06-08 11:56:22 
+2024-06-08 11:58:26 
+2024-06-08 11:58:40 
+2024-06-08 12:00:45 
+2024-06-08 12:10:22 
+2024-06-08 12:10:36 
+2024-06-08 12:10:53 
+2024-06-08 12:17:15 
+2024-06-08 12:20:33 
+2024-06-08 12:25:47 bgd
+2024-06-08 12:28:58 dg
+2024-06-08 12:29:29 ghbdfr
+2024-06-08 12:29:34 привет\
+2024-06-08 12:29:43 
+2024-06-08 12:46:01 
+2024-06-08 12:46:01 
+2024-06-08 12:55:42 -4254105317
+2024-06-08 12:57:12 5687000457
+2024-06-08 13:09:06 
+2024-06-08 13:23:17 5687000457
+2024-06-08 13:36:10 5687000457
+2024-06-08 13:58:03 5687000457
+2024-06-08 16:28:30 5687000457
+2024-06-08 16:28:40 5687000457
+2024-06-08 17:35:36 -4254105317
+2024-06-08 17:35:43 -4254105317
+2024-06-08 18:13:11 -4254105317
+2024-06-09 15:02:18 {"update_id":257800201,
+"message":{"message_id":455,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945338,"text":"\u041f\u043e\u043e\u0433\u0440\u0442"}}
+2024-06-09 15:02:24 {"update_id":257800202,
+"message":{"message_id":457,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945344,"text":"\u0420\u0440\u0440"}}
+2024-06-09 15:03:07 {"update_id":257800203,
+"message":{"message_id":459,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945386,"text":"\u041e\u0442\u0432\u0435\u0442"}}
+2024-06-09 15:03:51 {"update_id":257800207,
+"message":{"message_id":467,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945431,"text":"\u0412\u0430\u0443, \u043a\u0440\u0443\u0442\u043e\ud83d\udd25\ud83d\udd25\ud83d\ude1c\ud83d\ude1c"}}
+2024-06-09 15:04:03 {"update_id":257800208,
+"message":{"message_id":469,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945443,"text":"\u041f\u0440\u043e\u043f\u0430\u0433\u0430\u043d\u0434\u0430?)"}}
+2024-06-09 15:06:54 {"update_id":257800210,
+"message":{"message_id":473,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717945614,"photo":[{"file_id":"AgACAgIAAxkBAAIB2WZlxQ30NgpRaJD5wg5-hq_6Ns8QAAIE2zEbz_soSxJ--8FcoYvoAQADAgADcwADNQQ","file_unique_id":"AQADBNsxG8_7KEt4","file_size":351,"width":51,"height":90},{"file_id":"AgACAgIAAxkBAAIB2WZlxQ30NgpRaJD5wg5-hq_6Ns8QAAIE2zEbz_soSxJ--8FcoYvoAQADAgADbQADNQQ","file_unique_id":"AQADBNsxG8_7KEty","file_size":3687,"width":180,"height":320},{"file_id":"AgACAgIAAxkBAAIB2WZlxQ30NgpRaJD5wg5-hq_6Ns8QAAIE2zEbz_soSxJ--8FcoYvoAQADAgADeAADNQQ","file_unique_id":"AQADBNsxG8_7KEt9","file_size":29337,"width":450,"height":800},{"file_id":"AgACAgIAAxkBAAIB2WZlxQ30NgpRaJD5wg5-hq_6Ns8QAAIE2zEbz_soSxJ--8FcoYvoAQADAgADeQADNQQ","file_unique_id":"AQADBNsxG8_7KEt-","file_size":61649,"width":720,"height":1280}]}}
+2024-06-09 15:25:23 {"update_id":257800211,
+"message":{"message_id":475,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717946722,"left_chat_participant":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"left_chat_member":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"}}}
+2024-06-09 15:26:22 {"update_id":257800212,
+"message":{"message_id":477,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717946781,"new_chat_participant":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"new_chat_member":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"new_chat_members":[{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"}]}}
+2024-06-09 16:09:37 {"update_id":257800213,
+"message":{"message_id":479,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717949377,"voice":{"duration":0,"mime_type":"audio/ogg","file_id":"AwACAgIAAxkBAAIB32Zl08Gh4OW9kZ2y9wp8R3hgFGDsAAIpUwACz_soS8qWu_iiuoq3NQQ","file_unique_id":"AgADKVMAAs_7KEs","file_size":16147}}}
+2024-06-09 16:19:40 {"update_id":257800219,
+"message":{"message_id":486,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717949980,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:20:47 {"update_id":257800223,
+"message":{"message_id":494,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717950047,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:20:50 {"update_id":257800224,
+"message":{"message_id":496,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717950050,"text":"/game_answer@aGreekBot","entities":[{"offset":0,"length":22,"type":"bot_command"}]}}
+2024-06-09 16:30:59 {"update_id":257800226,
+"message":{"message_id":500,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717950659,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:33:29 {"update_id":257800227,
+"message":{"message_id":502,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717950809,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:33:43 {"update_id":257800229,
+"message":{"message_id":506,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717950823,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:43:18 {"update_id":257800230,
+"message":{"message_id":508,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717951398,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:50:40 {"update_id":257800233,
+"message":{"message_id":514,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717951839,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:51:42 {"update_id":257800235,
+"message":{"message_id":518,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717951902,"voice":{"duration":2,"mime_type":"audio/ogg","file_id":"AwACAgIAAxkBAAICBmZl3Z7kFxLehrSHJZeywt9t38wzAAK5UwACz_soSycft2qiEtVoNQQ","file_unique_id":"AgADuVMAAs_7KEs","file_size":45811}}}
+2024-06-09 16:55:08 {"update_id":257800237,
+"message":{"message_id":522,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952108,"text":"\u041e\u043a"}}
+2024-06-09 16:55:23 {"update_id":257800239,
+"message":{"message_id":526,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952123,"text":"\ud83d\ude2f"}}
+2024-06-09 16:57:11 {"update_id":257800241,
+"message":{"message_id":530,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952231,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 16:58:48 {"update_id":257800244,
+"message":{"message_id":536,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952328,"text":"\u041e\u043a"}}
+2024-06-09 17:00:59 {"update_id":257800252,
+"message":{"message_id":552,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952459,"text":"\ud83e\udd37\u200d\u2640"}}
+2024-06-09 17:02:39 {"update_id":257800257,
+"message":{"message_id":562,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952559,"text":"\u041f\u0440\u0438\u0432\u0435\u0442\u0438\u043a"}}
+2024-06-09 17:02:55 {"update_id":257800258,
+"message":{"message_id":564,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952575,"text":"\u041a\u043e\u043b\u043e\u043a\u043e\u043b"}}
+2024-06-09 17:07:35 {"update_id":257800265,
+"message":{"message_id":578,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952855,"text":"\ud83d\ude18"}}
+2024-06-09 17:08:43 {"update_id":257800266,
+"message":{"message_id":580,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952922,"sticker":{"width":512,"height":512,"emoji":"\ud83d\ude1e","set_name":"LamaProblama","is_animated":true,"is_video":false,"type":"regular","thumbnail":{"file_id":"AAMCAgADGQEAAgJEZmXhmoNtw1AxQw-5WkEU2oKFXN0AAqgAAztgJBTh-svRq4O5IgEAB20AAzUE","file_unique_id":"AQADqAADO2AkFHI","file_size":4984,"width":128,"height":128},"thumb":{"file_id":"AAMCAgADGQEAAgJEZmXhmoNtw1AxQw-5WkEU2oKFXN0AAqgAAztgJBTh-svRq4O5IgEAB20AAzUE","file_unique_id":"AQADqAADO2AkFHI","file_size":4984,"width":128,"height":128},"file_id":"CAACAgIAAxkBAAICRGZl4ZqDbcNQMUMPuVpBFNqChVzdAAKoAAM7YCQU4frL0auDuSI1BA","file_unique_id":"AgADqAADO2AkFA","file_size":21770}}}
+2024-06-09 17:09:49 {"update_id":257800269,
+"message":{"message_id":584,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952989,"reply_to_message":{"message_id":580,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717952922,"sticker":{"width":512,"height":512,"emoji":"\ud83d\ude1e","set_name":"LamaProblama","is_animated":true,"is_video":false,"type":"regular","thumbnail":{"file_id":"AAMCAgADGQEAAgJEZmXhmoNtw1AxQw-5WkEU2oKFXN0AAqgAAztgJBTh-svRq4O5IgEAB20AAzUE","file_unique_id":"AQADqAADO2AkFHI","file_size":4984,"width":128,"height":128},"thumb":{"file_id":"AAMCAgADGQEAAgJEZmXhmoNtw1AxQw-5WkEU2oKFXN0AAqgAAztgJBTh-svRq4O5IgEAB20AAzUE","file_unique_id":"AQADqAADO2AkFHI","file_size":4984,"width":128,"height":128},"file_id":"CAACAgIAAxkBAAICRGZl4ZqDbcNQMUMPuVpBFNqChVzdAAKoAAM7YCQU4frL0auDuSI1BA","file_unique_id":"AgADqAADO2AkFA","file_size":21770}},"text":"\u2639"}}
+2024-06-09 17:10:21 {"update_id":257800271,
+"message":{"message_id":588,"from":{"id":1404313511,"is_bot":false,"first_name":"\u0415\u043b\u0435\u043d\u0430","last_name":"\u041c\u0430\u0446\u043e\u043b\u0430","username":"AlyonaShylga","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717953021,"reply_to_message":{"message_id":587,"from":{"id":7448198434,"is_bot":true,"first_name":"aGreekBot","username":"aGreekBot"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717953007,"text":"\u041f\u0440\u043e\u0441\u044c\u0431\u0430 \u043e\u0442\u0432\u0435\u0447\u0430\u0442\u044c \u0442\u0435\u043a\u0441\u0442\u043e\u043c, \u0415\u043b\u0435\u043d\u0430!"},"text":"\u041f\u043e\u0447\u0435\u043c\u0443???"}}
+2024-06-09 17:13:36 {"update_id":257800275,
+"message":{"message_id":595,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717953216,"text":"\u041d\u0443 \u0438 \u0432\u043e\u043f\u0440\u043e\u0441\u044b, \u043a\u0430\u043f\u0435\u0446"}}
+2024-06-09 17:16:14 {"update_id":257800277,
+"message":{"message_id":599,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717953374,"text":"\u041d\u0435 \u0437\u043d\u0430\u044e"}}
+2024-06-09 17:17:17 {"update_id":257800278,
+"message":{"message_id":601,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717953437,"text":"\u041a\u0442\u043e?"}}
+2024-06-09 17:29:56 {"update_id":257800282,
+"message":{"message_id":609,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954195,"text":"/game_hint@aGreekBot","entities":[{"offset":0,"length":20,"type":"bot_command"}]}}
+2024-06-09 17:30:49 {"update_id":257800283,
+"message":{"message_id":611,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954248,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 17:31:07 {"update_id":257800284,
+"message":{"message_id":613,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954267,"text":"/game_answer","entities":[{"offset":0,"length":12,"type":"bot_command"}]}}
+2024-06-09 17:32:39 {"update_id":257800286,
+"message":{"message_id":617,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954358,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 17:32:55 {"update_id":257800287,
+"message":{"message_id":619,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954375,"text":"/game_hint@aGreekBot","entities":[{"offset":0,"length":20,"type":"bot_command"}]}}
+2024-06-09 17:33:38 {"update_id":257800290,
+"message":{"message_id":625,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954418,"text":"\u041f\u0440\u043e\u0445\u043e\u0434\u043d\u043e\u0439"}}
+2024-06-09 17:33:58 {"update_id":257800291,
+"message":{"message_id":627,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954438,"text":"\u041f\u0440\u043e\u0448\u0435\u0434\u0448\u0438\u0439"}}
+2024-06-09 17:34:28 {"update_id":257800292,
+"message":{"message_id":629,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954468,"text":"\u041f\u0440\u043e\u0432\u043e\u0434\u0438\u043c\u044b\u0439"}}
+2024-06-09 17:35:03 {"update_id":257800294,
+"message":{"message_id":633,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954503,"text":"\u0423\u0440\u0430"}}
+2024-06-09 17:35:23 {"update_id":257800296,
+"message":{"message_id":637,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954523,"text":"\u041f\u0443\u0441\u0442\u044b\u043d\u044f"}}
+2024-06-09 17:35:31 {"update_id":257800297,
+"message":{"message_id":639,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954531,"text":"\u041f\u0435\u0441\u043e\u0447\u043d\u0438\u0446\u0430"}}
+2024-06-09 17:38:22 {"update_id":257800299,
+"message":{"message_id":643,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954702,"text":"\u041e\u0448\u0438\u0431\u043e\u0447\u043a\u0430 \u0432 \u0441\u043b\u043e\u0432\u0435, \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u044e"}}
+2024-06-09 17:38:41 {"update_id":257800300,
+"message":{"message_id":645,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954720,"text":"\u03b1\u03bc\u03bc\u03bf\u03c5\u03b4\u03b9\u03ac"}}
+2024-06-09 17:41:56 {"update_id":257800302,
+"message":{"message_id":649,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717954916,"text":"\u0416\u0430\u043b\u044c"}}
+2024-06-09 17:43:43 {"update_id":257800304,
+"message":{"message_id":653,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717955023,"text":"\u0428\u043a\u043e\u043b\u0430"}}
+2024-06-09 17:45:13 {"update_id":257800307,
+"message":{"message_id":659,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":true},"date":1717955113,"text":"\u042f \u043f\u0440\u043e\u0441\u0438\u043b \u043e\u0442\u0432\u0435\u0442)"}}
+2024-06-09 17:56:58 {"update_id":257800310,
+"message":{"message_id":661,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-4254105317,"title":"aGreek_TranslationTraining","type":"group","all_members_are_administrators":false},"date":1717955817,"migrate_to_chat_id":-1002205650441}}
+2024-06-09 17:59:49 {"update_id":257800317,
+"message":{"message_id":662,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":5687000457,"first_name":"Lex","username":"RecuerdaDeLaMuerte","type":"private"},"date":1717955989,"text":"\u0427\u044c\u044c\u0432"}}
+2024-06-09 17:59:56 {"update_id":257800319,
+"message":{"message_id":666,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":5687000457,"first_name":"Lex","username":"RecuerdaDeLaMuerte","type":"private"},"date":1717955996,"text":"\u042c\u0432\u0432\u044c"}}
+2024-06-09 18:06:29 {"update_id":257800324,
+"message":{"message_id":10,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956389,"text":"\u0430\u043f\u0432\u0430\u043f"}}
+2024-06-09 18:06:35 {"update_id":257800325,
+"message":{"message_id":12,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"ru"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956395,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:07:55 {"update_id":257800326,
+"message":{"message_id":14,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956474,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:07:59 {"update_id":257800327,
+"message":{"message_id":16,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956479,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:08:14 {"update_id":257800329,
+"message":{"message_id":20,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956494,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:08:26 {"update_id":257800330,
+"message":{"message_id":22,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956506,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:08:32 {"update_id":257800331,
+"message":{"message_id":24,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956511,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:08:39 {"update_id":257800332,
+"message":{"message_id":26,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956519,"text":"/start_game@aGreekBot","entities":[{"offset":0,"length":21,"type":"bot_command"}]}}
+2024-06-09 18:08:48 {"update_id":257800333,
+"message":{"message_id":28,"from":{"id":5687000457,"is_bot":false,"first_name":"Lex","username":"RecuerdaDeLaMuerte","language_code":"en"},"chat":{"id":-1002205650441,"title":"aGreek_TranslationTraining","type":"supergroup"},"date":1717956528,"text":"/game_hint@aGreekBot","entities":[{"offset":0,"length":20,"type":"bot_command"}]}}
