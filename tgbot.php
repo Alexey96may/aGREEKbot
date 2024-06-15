@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 //token from another file
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
@@ -35,7 +35,6 @@ if ($chatId == BOTID) {
 $respText = 'Текст';
 
 $translArr = respArrNow($chatId, $user_Id);
-		
 $trueResp = trim(mb_strtolower($translArr[0]["translation"]));
 $trueQuestion = trim(mb_strtolower($translArr[0]["word"]));
 
@@ -48,8 +47,8 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	$respText = "Просьба отвечать текстом, $user_firstName.";
 } elseif (array_key_exists("photo", $arrDataAnswer["message"])) {
 	$respText = "Надеюсь, на фото ответ, $user_firstName. Но я понимаю только текст!";
-} elseif (preg_match("/^[Пп]ожелание.+/i", $textMessage) || preg_match("/^[Пп]редложение.+/i", $textMessage)) {
-	$respText = "Пожелание принято! Спасибо, $user_firstName!";
+} elseif (preg_match("/^[Пп]ожелание.+/ui", $textMessage)) {
+	$respText = "Пожелание принято. Спасибо, $user_firstName!";
 	writeLogFile($user_firstName . ": " . $textMessage, false, "/message.txt");
 } elseif (preg_match("/^\*.+/i", $textMessage)) {
 	exit();
@@ -57,9 +56,9 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «" . $trueQuestion. "».";
 } elseif (array_key_exists("left_chat_participant", $arrDataAnswer["message"])){
 	$respText = "Пока, ".$arrDataAnswer["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
-} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/i", $textMessage)){
+} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/ui", $textMessage)){
 	$respText = "Γεια σας, $user_firstName!";
-} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/i", $textMessage)){
+} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/ui", $textMessage)){
 	$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «" . $trueQuestion. "».";
 } elseif (preg_match("/game_change/i", $textMessage)){
 	changeGameMode();
@@ -70,13 +69,15 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	$translArr = randArr(readTTFile('/translTraining.txt'));
 	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
 	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
-} elseif (preg_match("/game_hint/i", $textMessage) || preg_match("/[Пп]одсказка/i", $textMessage)) {
+} elseif (preg_match("/game_hint/i", $textMessage)) {
 	$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «" . $translArr[0]["base"]. "» — «". $translArr[0]["baseTransl"]. "».";
-} elseif (preg_match("/bot_info/i", $textMessage)) {
-	$respText = "Информация об игре: \nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «start_game».\n— взять подсказку команой «game_hint».\n— оставить пожелание для развития игры или бота, написав «пожелание» (или «предложение»), за которым следует текст вашего пожелания.\n—";
-} elseif (preg_match("/[Оо]твет/i", $textMessage)) {
+} elseif (preg_match("/game_dictionary/i", $textMessage) || preg_match("/[Сс]ловарь/ui", $textMessage)) {
+	$respText = getDefHinеText($translArr);
+} elseif (preg_match("/game_info/i", $textMessage)) {
+	$respText = "Информация об игре!\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «start_game».\n— взять подсказку команой «game_hint».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «game_change».\n— оставить пожелание для развития игры или бота, написав с начала строки: «Пожелание», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
+} elseif (preg_match("/[Оо]твет/ui", $textMessage)) {
 	$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
-} elseif (preg_match("/[Нн]е знаю/i", $textMessage) || preg_match("/[Сс]даюсь/i", $textMessage)) {
+} elseif (preg_match("/[Нн]е знаю/ui", $textMessage) || preg_match("/[Сс]даюсь/ui", $textMessage)) {
 	$respText = "$user_firstName, подумайте ещё или смените вопрос командой «start_game».";
 } elseif (isContResp($trueResp, $textMessage)) {
 	array_shift($translArr);
@@ -91,10 +92,14 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 $getQuery = array(
 	'chat_id' 		=> $chatId,
 	'text'			=> $respText,
-	'parse_mode'	=> "html",
+	'parse_mode'	=> "Markdown",
 );
 
-TG_sendMessage($getQuery);
+try {
+    TG_sendMessage($getQuery);
+} catch (Exception $e) {
+	writeLogFile('PHP перехватил исключение: ' . $e->getMessage() . "\n", false, "/errors.txt");
+}
 
 //Функции
 //для записи логов недоработанных вопросов
@@ -219,6 +224,18 @@ function getTrueQw(){
 	return $trueQuestion;
 }
 
+//узнать подсказку определение
+function getDefHinеText($arr){
+	$defHintText = "К сожалению, для данного слова пока нет определения.";
+	if (array_key_exists("hint", $arr[0])) {
+			$defHint = $arr[0]["hint"];
+		if ($defHint != "") {
+			$defHintText = "Определение из словаря: \n\n" . $arr[0]["hint"];
+		}
+	}
+	
+	return $defHintText;
+}
 
 
 
