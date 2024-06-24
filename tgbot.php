@@ -3,6 +3,9 @@
 //token from another file
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
 
+//array for the question modules
+$allTheQuestionFiles = [1,2,3,4];
+
 //template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
 
@@ -19,22 +22,29 @@ $user_Id = $arrDataAnswer["message"]["from"]["id"];
 $user_firstName = $arrDataAnswer["message"]["from"]["first_name"];
 $user_lastName = $arrDataAnswer["message"]["from"]["last_name"];
 
+//определим переменную имени файла
+$filePathVar = '';
 if ($chatId == BOTID) {
-	if (!file_exists(TEMPL_PREFIX."/settings_"."user".$user_Id.".txt")) {
-		file_put_contents(TEMPL_PREFIX."/settings_"."user".$user_Id.".txt", '[]');
-		changeGameMode("toRus");
-	}
+	$filePathVar = "user" . $user_Id;
 } else {
-	if (!file_exists(TEMPL_PREFIX."/settings_"."chat".$resultChatId.".txt")) {
-		$resultChatId = substr($chatId, 1);
-		file_put_contents(TEMPL_PREFIX."/settings_"."chat".$resultChatId.".txt", '[]');
-		changeGameMode("toRus");
-	}
+	$resultChatId = substr($chatId, 1);
+	$filePathVar = "chat" . $resultChatId;
+}
+
+//формируем файл настроек, если его нет, добавление модуля и файла для перемешивания
+if (!file_exists(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt")) {
+	file_put_contents(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt", '[]');
+	changeGameMode("toRus");
+}
+if (getGameModule() === null || getGameModule() === "") {
+	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+} else {
+	$actualFileQw = "/translTraining" . getGameModule() . ".txt";
 }
 
 $respText = 'Текст';
 
-$translArr = respArrNow($chatId, $user_Id);
+$translArr = respArrNow();
 $trueResp = trim(mb_strtolower($translArr[0]["translation"]));
 $trueQuestion = trim(mb_strtolower($translArr[0]["word"]));
 
@@ -53,46 +63,47 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 } elseif (preg_match("/^\*.+/i", $textMessage)) {
 	exit();
 } elseif (array_key_exists("new_chat_participant", $arrDataAnswer["message"])){
-	$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «" . $trueQuestion. "».";
+	$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 } elseif (array_key_exists("left_chat_participant", $arrDataAnswer["message"])){
 	$respText = "Пока, ".$arrDataAnswer["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
 } elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/ui", $textMessage)){
 	$respText = "Γεια σας, $user_firstName!";
 } elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/ui", $textMessage)){
-	$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «" . $trueQuestion. "».";
+	$respText = "Γεια σας, $user_firstName! Переведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 } elseif (preg_match("/game_change/i", $textMessage)){
 	changeGameMode();
-	$translArr = randArr(readTTFile('/translTraining.txt'));
-	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
+	$translArr = randArr(readTTFile($actualFileQw));
+	reWriteTTCopyFile(json_encode($translArr));
+	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } elseif (preg_match("/start_game/i", $textMessage)) {
-	$translArr = randArr(readTTFile('/translTraining.txt'));
-	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-	$respText = "Игра началась! \nПереведите слово: " . " «" . getTrueQw() . "».";
+	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+	$translArr = randArr(readTTFile($actualFileQw));
+	reWriteTTCopyFile(json_encode($translArr));
+	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } elseif (preg_match("/game_hint/i", $textMessage)) {
-	$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «" . $translArr[0]["base"]. "» — «". $translArr[0]["baseTransl"]. "».";
+	$respText = "$user_firstName хочет подсказку!\n" . "Это слово произошло от «<b>" . $translArr[0]["base"]. "</b>» — «<i>". $translArr[0]["baseTransl"]. "</i>».";
 } elseif (preg_match("/game_dictionary/i", $textMessage) || preg_match("/[Сс]ловарь/ui", $textMessage)) {
 	$respText = getDefHinеText($translArr);
 } elseif (preg_match("/game_info/i", $textMessage)) {
-	$respText = "Информация об игре!\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «start_game».\n— взять подсказку команой «game_hint».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «game_change».\n— оставить пожелание для развития игры или бота, написав с начала строки: «Пожелание», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
+	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «<b>start_game</b>».\n— взять подсказку командой «<b>game_hint</b>».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «<b>game_change</b>».\n— взять помощь словаря командой «<b>game_dictionary</b>» или словом «<b>словарь</b>» в чате.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ «<b>*</b>» в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: «<b>Пожелание</b>», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
 } elseif (preg_match("/[Оо]твет/ui", $textMessage)) {
 	$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
 } elseif (preg_match("/[Нн]е знаю/ui", $textMessage) || preg_match("/[Сс]даюсь/ui", $textMessage)) {
 	$respText = "$user_firstName, подумайте ещё или смените вопрос командой «start_game».";
 } elseif (isContResp($trueResp, $textMessage)) {
 	array_shift($translArr);
-	reWriteTTCopyFile(json_encode($translArr), $chatId, $user_Id);
-	$translArr = respArrNow($chatId, $user_Id);
-	$respText = "Ура! \nПереведите слово: " . " «" . getTrueQw() . "».";
+	reWriteTTCopyFile(json_encode($translArr));
+	$translArr = respArrNow();
+	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}»\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
 	writeLogFile($textMessage, false, "/log.txt");
-	$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «" . $trueQuestion. "».";
+	$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
 	'chat_id' 		=> $chatId,
 	'text'			=> $respText,
-	'parse_mode'	=> "Markdown",
+	'parse_mode'	=> "HTML",
 );
 
 try {
@@ -116,13 +127,10 @@ function writeLogFile($string, $clear = false, $fileName){
 }
 
 //для записи копии файла вопросов
-function reWriteTTCopyFile($string, $chatId, $user_Id){
-	if ($chatId == BOTID) {
-		$log_file_name = TEMPL_PREFIX."/translTraining_copy"."user".$user_Id.".txt";
-	} else {
-		$resultChatId = substr($chatId, 1);
-		$log_file_name = TEMPL_PREFIX."/translTraining_copy"."chat".$resultChatId.".txt";
-	}
+function reWriteTTCopyFile($string){
+	global $filePathVar;
+
+	$log_file_name = TEMPL_PREFIX."/translTraining_copy" . $filePathVar . ".txt";
 	file_put_contents($log_file_name, '');
 	file_put_contents($log_file_name, print_r($string, true), FILE_APPEND);
 }
@@ -161,16 +169,13 @@ function isContResp($string, $needle) {
 }
 
 /* для проверки пустоты файла и выдачи массива вопросов */
-function respArrNow($chatId, $user_Id) {
-	if ($chatId == BOTID) {
-		$filePath = "/translTraining_copy"."user".$user_Id.".txt";
-	} else {
-		$resultChatId = substr($chatId, 1);
-		$filePath = "/translTraining_copy"."chat".$resultChatId.".txt";
-	}
+function respArrNow() {
+	global $filePathVar, $actualFileQw;
 
+	$filePath = "/translTraining_copy" . $filePathVar . ".txt";
 	if (file_get_contents(TEMPL_PREFIX.$filePath) == "[]") {
-		$translArr = randArr(readTTFile('/translTraining.txt'));
+		$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+		$translArr = randArr(readTTFile($actualFileQw));
 		reWriteTTCopyFile(json_encode($translArr));
 		return $translArr;
 	} else {
@@ -181,26 +186,17 @@ function respArrNow($chatId, $user_Id) {
 
 //узнать мод игры
 function getGameMode(){
-	global $chatId, $user_Id;
-	if ($chatId == BOTID) {
-		$file_ChatSetting = "/settings_"."user".$user_Id.".txt";
-	} else {
-		$resultChatId = substr($chatId, 1);
-		$file_ChatSetting = "/settings_"."chat".$resultChatId.".txt";
-	}
+	global $filePathVar;
+
+	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
 	return readTTFile($file_ChatSetting)["gameMod"];
 }
 
 //записать мод игры
 function changeGameMode(){
-	global $chatId, $user_Id;
-	if ($chatId == BOTID) {
-		$file_ChatSetting = "/settings_"."user".$user_Id.".txt";
-	} else {
-		$resultChatId = substr($chatId, 1);
-		$file_ChatSetting = "/settings_"."chat".$resultChatId.".txt";
-	}
+	global $filePathVar;
 
+	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
 	$chatSettingArr = readTTFile($file_ChatSetting);
 	$actualGameMod = getGameMode();
 	if ($actualGameMod == "toRus") {
@@ -230,31 +226,30 @@ function getDefHinеText($arr){
 	if (array_key_exists("hint", $arr[0])) {
 			$defHint = $arr[0]["hint"];
 		if ($defHint != "") {
-			$defHintText = "Определение из словаря: \n\n" . $arr[0]["hint"];
+			$defHintText = "Определение слова <b>«" . getTrueQw() . "»</b> из словаря: \n\n" . $arr[0]["hint"];
 		}
 	}
 	
 	return $defHintText;
 }
 
+//узнать мод игры
+function getGameModule(){
+	global $filePathVar;
 
+	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
+	return readTTFile($file_ChatSetting)["fileGame"];
+}
+//запись модуля вопросов игры
+function setNewGameModule($arr){
+	global $filePathVar;
 
+	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
+	$chatSettingArr = readTTFile($file_ChatSetting);
 
+	$chatSettingArr["fileGame"] = array_rand($arr) + 1;
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '');
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND);
+	return $chatSettingArr["fileGame"];
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
