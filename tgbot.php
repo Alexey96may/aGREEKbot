@@ -9,6 +9,9 @@ $allTheQuestionFiles = [1,2,3,4];
 //template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
 
+//цена вопроса
+$scoreToAdd = 1;
+
 //Ключ доступа сообщества
 define("BOTTOKEN", $secretToken);
 define("BOTID", "5687000457");
@@ -21,6 +24,7 @@ $chatId = $arrDataAnswer["message"]["chat"]["id"];
 $user_Id = $arrDataAnswer["message"]["from"]["id"];
 $user_firstName = $arrDataAnswer["message"]["from"]["first_name"];
 $user_lastName = $arrDataAnswer["message"]["from"]["last_name"];
+$user_fullName = $user_firstName . $user_lastName;
 
 //определим переменную имени файла
 $filePathVar = '';
@@ -35,6 +39,9 @@ if ($chatId == BOTID) {
 if (!file_exists(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt")) {
 	file_put_contents(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt", '[]');
 	changeGameMode("toRus");
+}
+if (!file_exists(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt")) {
+	file_put_contents(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt", '[]');
 }
 if (getGameModule() === null || getGameModule() === "") {
 	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
@@ -62,6 +69,8 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	writeLogFile($user_firstName . ": " . $textMessage, false, "/message.txt");
 } elseif (preg_match("/^\*.+/i", $textMessage)) {
 	exit();
+} elseif ($textMessage === $trueQuestion) {
+	$respText = "Это мой вопрос, $user_firstName!";
 } elseif (array_key_exists("new_chat_participant", $arrDataAnswer["message"])){
 	$respText = "Γεια σας, ".$arrDataAnswer["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 } elseif (array_key_exists("left_chat_participant", $arrDataAnswer["message"])){
@@ -85,16 +94,23 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 } elseif (preg_match("/game_dictionary/i", $textMessage) || preg_match("/[Сс]ловарь/ui", $textMessage)) {
 	$respText = getDefHinеText($translArr);
 } elseif (preg_match("/game_info/i", $textMessage)) {
-	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «<b>start_game</b>».\n— взять подсказку командой «<b>game_hint</b>».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «<b>game_change</b>».\n— взять помощь словаря командой «<b>game_dictionary</b>» или словом «<b>словарь</b>» в чате.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ «<b>*</b>» в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: «<b>Пожелание</b>», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
+	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «<b>start_game</b>».\n— взять подсказку командой «<b>game_hint</b>».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «<b>game_change</b>».\n— взять помощь словаря командой «<b>game_dictionary</b>» или словом «<b>словарь</b>» в чате.\n— узнать свой счёт в чате, своё место в рейтинге чата или топ игроков чата командами «Мой счёт», «Мой рейтинг» и «Рейтинг чата», соответственно.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ «<b>*</b>» в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: «<b>Пожелание</b>», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
 } elseif (preg_match("/[Оо]твет/ui", $textMessage)) {
 	$respText = "$user_firstName хочет ответ.\n" . "Но он его не получит! :)";
 } elseif (preg_match("/[Нн]е знаю/ui", $textMessage) || preg_match("/[Сс]даюсь/ui", $textMessage)) {
 	$respText = "$user_firstName, подумайте ещё или смените вопрос командой «start_game».";
+} elseif (preg_match("/[Мм]ой рейтинг/ui", $textMessage) || preg_match("/[Уу] меня рейтинг/ui", $textMessage)) {
+	$respText = getUserRating($user_fullName . "__" . $user_Id);
+} elseif (preg_match("/[Мм]ой сч[её]т/ui", $textMessage)) {
+	$respText = "Ваш счёт = " . getChatScore($user_fullName . "__" . $user_Id);
+} elseif (preg_match("/[Рр]ейтинг чата/ui", $textMessage)) {
+	$respText = getChatRating();
 } elseif (isContResp($trueResp, $textMessage)) {
 	array_shift($translArr);
 	reWriteTTCopyFile(json_encode($translArr));
 	$translArr = respArrNow();
-	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}»\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
+	setChatScore($user_fullName . "__" . $user_Id, 1);
+	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user_fullName . "__" . $user_Id) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
 	writeLogFile($textMessage, false, "/log.txt");
 	$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
@@ -233,14 +249,14 @@ function getDefHinеText($arr){
 	return $defHintText;
 }
 
-//узнать мод игры
+//get game module
 function getGameModule(){
 	global $filePathVar;
 
 	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
 	return readTTFile($file_ChatSetting)["fileGame"];
 }
-//запись модуля вопросов игры
+//set game module
 function setNewGameModule($arr){
 	global $filePathVar;
 
@@ -253,3 +269,77 @@ function setNewGameModule($arr){
 	return $chatSettingArr["fileGame"];
 }
 
+//users chat score
+function getChatScore($userName) {
+	global $filePathVar;
+
+	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
+	$chatScoresArr = readTTFile($file_ChatScores);
+
+	if (array_key_exists($userName, $chatScoresArr)) {
+		return (int) $chatScoresArr[$userName];
+	} else {
+		return setChatScore($userName, 0);
+	}
+}
+
+function getUserRating($userName) {
+	global $filePathVar;
+
+	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
+	$chatScoresArr = readTTFile($file_ChatScores);
+
+	if (array_key_exists($userName, $chatScoresArr)) {
+		$usesrScoreNumber = (int) array_search($userName, $chatScoresArr) + 1;
+		return "Вы на $usesrScoreNumber месте в этом чате!";
+	} else {
+		return "Вас ещё нет в статистике этого чата! \nОтветьте правильно хотя бы на один вопрос.";
+	}
+}
+
+function getChatRating() {
+	global $filePathVar;
+
+	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
+	$chatScoresArr = readTTFile($file_ChatScores);
+	$result = "Рейтинг нашего чата: \n\n";
+	$countNum = 1;
+
+	if (count($chatScoresArr) !== 0) {
+
+		arsort($chatScoresArr, SORT_NUMERIC);
+
+		foreach ($chatScoresArr as $key => $value) {
+			if ($countNum < 10) {
+				$symbolToCut = strpos($key, "__");
+				$originUserName = substr($key, 0, $symbolToCut);
+				$result .= $countNum . ": " . $originUserName . " - " . $value . ".\n";
+				$countNum++;
+			} else {
+				break;
+			}
+		}
+
+	} else {
+		$result = "Рейтинг этого чата пока ещё пуст.";
+	}
+
+	return $result;
+}
+
+function setChatScore($userName, $scoreToAdd) {
+	global $filePathVar;
+
+	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
+	$chatScoresArr = readTTFile($file_ChatScores);
+
+	if (array_key_exists($userName, $chatScoresArr)) {
+		$chatScoresArr[$userName] = (int) $chatScoresArr[$userName] + $scoreToAdd;
+	} else {
+		$chatScoresArr[$userName] = 0 + $scoreToAdd;
+	}
+
+	file_put_contents(TEMPL_PREFIX.$file_ChatScores, '');
+	file_put_contents(TEMPL_PREFIX.$file_ChatScores, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND);
+	return (int) $chatScoresArr[$userName];
+}
