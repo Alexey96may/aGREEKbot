@@ -112,8 +112,7 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	setChatScore($user_fullName . "__" . $user_Id, 1);
 	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user_fullName . "__" . $user_Id) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
-	writeLogFile($textMessage, false, "/log.txt");
-	$respText = "Попытайтесь снова, $user_firstName! \nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
+	$respText = wrongAnswerMessage($textMessage, $trueResp, $user_firstName) . "\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
@@ -342,4 +341,57 @@ function setChatScore($userName, $scoreToAdd) {
 	file_put_contents(TEMPL_PREFIX.$file_ChatScores, '');
 	file_put_contents(TEMPL_PREFIX.$file_ChatScores, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND);
 	return (int) $chatScoresArr[$userName];
+}
+
+function answerRater($userAnswer, $correctAnswer) {
+    $userAnswer = strtolower(trim($userAnswer));
+    $correctAnswer = explode(",", $correctAnswer);
+
+    $sameLetterCount = 0;
+    $rating;
+	$akinnestStrings = [$userAnswer, ""];
+	$maxStringLength;
+
+	for ($u=0; $u < count($correctAnswer); $u++) {
+		$maxCurrentStringLength = max(strlen($correctAnswer[$u]), strlen($userAnswer));
+		$correctAnswer[$u] = strtolower(trim($correctAnswer[$u]));
+		$currentStringsArr = [$userAnswer, $correctAnswer[$u]];
+		$currentLetterCount = 0;
+		$currentUserAnswer = $userAnswer;
+
+		for ($i=0; $i < $maxCurrentStringLength; $i++) { 
+			if ($correctAnswer[$u][$i] === $currentUserAnswer[$i]) {
+				$currentLetterCount++;
+			} else {
+				if (strlen($correctAnswer[$u]) > strlen($userAnswer)) {
+					$currentUserAnswer = substr($currentUserAnswer, 0, $i) . "*" . substr($currentUserAnswer, $i);
+				} elseif(strlen($correctAnswer[$u]) < strlen($currentUserAnswer)) {
+					$correctAnswer[$u] = substr($correctAnswer[$u], 0, $i) . "*" . substr($correctAnswer[$u], $i);
+				}
+			}
+		}
+		if ($sameLetterCount <= $currentLetterCount) {
+			$sameLetterCount = $currentLetterCount;
+			$akinnestStrings = $currentStringsArr;
+		}
+	}
+
+    $maxStringLength = max(strlen($akinnestStrings[0]), strlen($akinnestStrings[1]));
+    $rating = $sameLetterCount / $maxStringLength;
+    return $rating;
+}
+
+function wrongAnswerMessage($userAnswer, $correctAnswer, $user_firstName) {
+    $answerRating = answerRater($userAnswer, $correctAnswer);
+    $message = '';
+
+    if ($answerRating > 0.75) {
+        $message = "Очень близко! Возможно, в вашем ответе, $user_firstName, опечатка.";
+    } else if($answerRating > 0.5) {
+        $message = "Неправильно, но близко! Попытайтесь снова, $user_firstName!";
+    } else {
+        $message = "Попытайтесь снова, $user_firstName!";
+    }
+
+    return $message;
 }
