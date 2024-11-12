@@ -400,7 +400,7 @@ function infinitiveMessage($userAnswer, $correctAnswer) {
     $userAnswerLastLetter = mb_substr($userAnswer, -1);
     $correctAnswerLastLetter = mb_substr($correctAnswer, -1);
     
-    if (($userAnswerLastLetter === "ю" || $userAnswerLastLetter === "у" || $userAnswerLastLetter === "сь") && ($correctAnswerLastLetter === "ω" || $correctAnswerLastLetter === "ώ" || mb_substr($correctAnswer, -3) === "μαι")) {
+    if (($userAnswerLastLetter === "ю" || $userAnswerLastLetter === "у" || mb_substr($userAnswer, -2) === "сь") && ($correctAnswerLastLetter === "ω" || $correctAnswerLastLetter === "ώ" || mb_substr($correctAnswer, -3) === "μαι")) {
         return "Пожалуйста, переводите глаголы инфинитивами...";
     } 
     return "";
