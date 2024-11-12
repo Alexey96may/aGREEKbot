@@ -112,7 +112,7 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	setChatScore($user_fullName . "__" . $user_Id, 1);
 	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user_fullName . "__" . $user_Id) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
-	$respText = wrongAnswerMessage($textMessage, $trueResp, $user_firstName) . infinitiveMessage($textMessage, $trueResp) . "\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
+	$respText = wrongAnswerMessage($textMessage, $trueResp, $user_firstName) . " " . infinitiveMessage($textMessage, $trueQuestion) . "\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
@@ -344,7 +344,7 @@ function setChatScore($userName, $scoreToAdd) {
 }
 
 function answerRater($userAnswer, $correctAnswer) {
-    $userAnswer = strtolower(trim($userAnswer));
+    $userAnswer = mb_strtolower(trim($userAnswer));
     $correctAnswer = explode(",", $correctAnswer);
 
     $sameLetterCount = 0;
@@ -354,7 +354,7 @@ function answerRater($userAnswer, $correctAnswer) {
 
 	for ($u=0; $u < count($correctAnswer); $u++) {
 		$maxCurrentStringLength = max(strlen($correctAnswer[$u]), strlen($userAnswer));
-		$correctAnswer[$u] = strtolower(trim($correctAnswer[$u]));
+		$correctAnswer[$u] = mb_strtolower(trim($correctAnswer[$u]));
 		$currentStringsArr = [$userAnswer, $correctAnswer[$u]];
 		$currentLetterCount = 0;
 		$currentUserAnswer = $userAnswer;
@@ -386,7 +386,7 @@ function wrongAnswerMessage($userAnswer, $correctAnswer, $user_firstName) {
     $message = '';
 
     if ($answerRating > 0.75) {
-        $message = "Очень близко! Возможно, в вашем ответе, $user_firstName, опечатка.";
+        $message = "Очень близко, $user_firstName! Возможно, в вашем ответе опечатка.";
     } else if($answerRating > 0.5) {
         $message = "Неправильно, но близко! Попытайтесь снова, $user_firstName!";
     } else {
@@ -401,7 +401,7 @@ function infinitiveMessage($userAnswer, $correctAnswer) {
     $correctAnswerLastLetter = mb_substr($correctAnswer, -1);
     
     if (($userAnswerLastLetter === "ю" || $userAnswerLastLetter === "у" || $userAnswerLastLetter === "сь") && ($correctAnswerLastLetter === "ω" || $correctAnswerLastLetter === "ώ" || mb_substr($correctAnswer, -3) === "μαι")) {
-        return "\nПожалуйста, переводите глаголы инфинитивами!";
+        return "Пожалуйста, переводите глаголы инфинитивами...";
     } 
     return "";
 }
