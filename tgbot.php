@@ -364,9 +364,9 @@ function answerRater($userAnswer, $correctAnswer) {
 				$currentLetterCount++;
 			} else {
 				if (strlen($correctAnswer[$u]) > strlen($userAnswer)) {
-					$currentUserAnswer = substr($currentUserAnswer, 0, $i) . "*" . substr($currentUserAnswer, $i);
+					$currentUserAnswer = mb_substr($currentUserAnswer, 0, $i) . "*" . mb_substr($currentUserAnswer, $i);
 				} elseif(strlen($correctAnswer[$u]) < strlen($currentUserAnswer)) {
-					$correctAnswer[$u] = substr($correctAnswer[$u], 0, $i) . "*" . substr($correctAnswer[$u], $i);
+					$correctAnswer[$u] = mb_substr($correctAnswer[$u], 0, $i) . "*" . mb_substr($correctAnswer[$u], $i);
 				}
 			}
 		}
@@ -397,10 +397,10 @@ function wrongAnswerMessage($userAnswer, $correctAnswer, $user_firstName) {
 }
 
 function infinitiveMessage($userAnswer, $correctAnswer) {
-    $userAnswerLastLetter = substr($userAnswer, -1);
-    $correctAnswerLastLetter = substr($correctAnswer, -1);
+    $userAnswerLastLetter = mb_substr($userAnswer, -1);
+    $correctAnswerLastLetter = mb_substr($correctAnswer, -1);
     
-    if ((userAnswerLastLetter === "ю" || userAnswerLastLetter === "у" || userAnswerLastLetter === "сь") && (correctAnswerLastLetter === "ω" || substr(correctAnswer, -3) === "μαι")) {
+    if (($userAnswerLastLetter === "ю" || $userAnswerLastLetter === "у" || $userAnswerLastLetter === "сь") && ($correctAnswerLastLetter === "ω" || mb_substr($correctAnswer, -3) === "μαι")) {
         return "\nПожалуйста, переводите глаголы инфинитивами!";
     } 
     return "";
