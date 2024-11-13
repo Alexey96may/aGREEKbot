@@ -112,7 +112,7 @@ if (array_key_exists("voice", $arrDataAnswer["message"]) || array_key_exists("st
 	setChatScore($user_fullName . "__" . $user_Id, 1);
 	$respText = "Правильно, $user_firstName! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user_fullName . "__" . $user_Id) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
-	$respText = wrongAnswerMessage($textMessage, $trueResp, $user_firstName) . " " . infinitiveMessage($textMessage, $trueQuestion) . "\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
+	$respText = wrongAnswerMessage($textMessage, $trueResp, $user_firstName) . " " . infinitiveMessage($textMessage, $trueQuestion) . decideOnYourAnswer($textMessage) . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
@@ -402,6 +402,13 @@ function infinitiveMessage($userAnswer, $correctAnswer) {
     
     if (($userAnswerLastLetter === "ю" || $userAnswerLastLetter === "у" || mb_substr($userAnswer, -2) === "сь") && ($correctAnswerLastLetter === "ω" || $correctAnswerLastLetter === "ώ" || mb_substr($correctAnswer, -3) === "μαι")) {
         return "Пожалуйста, переводите глаголы инфинитивами...";
-    } 
+    }
     return "";
+}
+
+function decideOnYourAnswer($userAnswer) {
+    if (mb_strpos($userAnswer, ",") !== false) {
+		return "Определитесь с ответом пожалуйста!";
+	}
+	return "";
 }
