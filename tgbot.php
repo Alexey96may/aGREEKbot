@@ -37,11 +37,11 @@ if ($chatId == BOTID) {
 
 //формируем файл настроек, если его нет, добавление модуля и файла для перемешивания
 if (!file_exists(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt")) {
-	file_put_contents(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt", '[]');
+	file_put_contents(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt", '[]', LOCK_EX);
 	changeGameMode("toRus");
 }
 if (!file_exists(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt")) {
-	file_put_contents(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt", '[]');
+	file_put_contents(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt", '[]', LOCK_EX);
 }
 if (getGameModule() === null || getGameModule() === "") {
 	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
@@ -133,11 +133,11 @@ function writeLogFile($string, $clear = false, $fileName){
     $log_file_name = TEMPL_PREFIX.$fileName;
     if($clear == false) {
 		$now = date("Y-m-d H:i:s");
-		file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND);
+		file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
     }
     else {
-		file_put_contents($log_file_name, '');
-        file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND);
+		file_put_contents($log_file_name, '', LOCK_EX);
+        file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
     }
 }
 
@@ -146,8 +146,8 @@ function reWriteTTCopyFile($string){
 	global $filePathVar;
 
 	$log_file_name = TEMPL_PREFIX."/translTraining_copy" . $filePathVar . ".txt";
-	file_put_contents($log_file_name, '');
-	file_put_contents($log_file_name, print_r($string, true), FILE_APPEND);
+	file_put_contents($log_file_name, '', LOCK_EX);
+	file_put_contents($log_file_name, print_r($string, true), FILE_APPEND | LOCK_EX);
 }
 
 //для чтения файла вопросов в массив
@@ -219,8 +219,8 @@ function changeGameMode(){
 	} else {
 		$chatSettingArr["gameMod"] = "toRus";
 	}
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '');
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND);
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '', LOCK_EX);
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return $chatSettingArr["gameMod"];
 }
 
@@ -263,8 +263,8 @@ function setNewGameModule($arr){
 	$chatSettingArr = readTTFile($file_ChatSetting);
 
 	$chatSettingArr["fileGame"] = array_rand($arr) + 1;
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '');
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND);
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '', LOCK_EX);
+	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return $chatSettingArr["fileGame"];
 }
 
@@ -338,8 +338,8 @@ function setChatScore($userName, $scoreToAdd) {
 		$chatScoresArr[$userName] = 0 + $scoreToAdd;
 	}
 
-	file_put_contents(TEMPL_PREFIX.$file_ChatScores, '');
-	file_put_contents(TEMPL_PREFIX.$file_ChatScores, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND);
+	file_put_contents(TEMPL_PREFIX.$file_ChatScores, '', LOCK_EX);
+	file_put_contents(TEMPL_PREFIX.$file_ChatScores, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return (int) $chatScoresArr[$userName];
 }
 
@@ -408,7 +408,7 @@ function infinitiveMessage($userAnswer, $correctAnswer) {
 
 function decideOnYourAnswer($userAnswer) {
     if (mb_strpos($userAnswer, ",") !== false) {
-		return "Определитесь с ответом пожалуйста!";
+		return "Определитесь с ответом, пожалуйста.";
 	}
 	return "";
 }
