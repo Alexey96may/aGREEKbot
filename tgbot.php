@@ -6,22 +6,12 @@ use App\Classes\User;
 use App\Classes\Room;
 use App\Classes\UserAnswer;
 
-//Token from another file
+//Token
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
-
-//Array for the question modules
-$allTheQuestionFiles = [1,2,3,4];
+define("BOTTOKEN", $secretToken);
 
 //Template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
-
-//True answer price
-$scoreToAdd = 1;
-
-//Access keys
-define("BOTTOKEN", $secretToken);
-define("BOTID", "5687000457");
-define("CHATTTID", "-1002205650441");
 
 //Main data
 $data = file_get_contents('php://input');
@@ -36,27 +26,33 @@ if (class_exists('App\Classes\User') && class_exists('App\Classes\Room') && clas
 	die('Class existing Error!');
 }
 
-//определим переменную имени файла
-$filePathVar = '';
-if ($room->getID() == BOTID) {
-	$filePathVar = "user" . $user->getID();
+//Array for the question modules
+$allTheQuestionFiles = [1,2,3,4];
+
+//True answer price
+$scoreToAdd = 1;
+
+//Complete file Paths according to this chat
+$settingsFilePath = TEMPL_PREFIX.'/settings_' . $room->roomIDPath() . '.txt';
+$scoresFilePath = TEMPL_PREFIX.'/scores_' . $room->roomIDPath() . '.txt';
+$translTrain_copyFilePath = TEMPL_PREFIX.'/translTraining_copy' . $room->roomIDPath() . '.txt';
+$userMessageFilePath = TEMPL_PREFIX.'/message.txt';
+$logFilePath = TEMPL_PREFIX.'/log.txt';
+$errorsFilePath = TEMPL_PREFIX.'/errors.txt';
+
+if (getGameModule() === null || getGameModule() === "") {
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
 } else {
-	$resultChatId = substr($room->getID(), 1);
-	$filePathVar = "chat" . $resultChatId;
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . getGameModule() . ".txt";
 }
 
 //формируем файл настроек, если его нет, добавление модуля и файла для перемешивания
-if (!file_exists(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt")) {
-	file_put_contents(TEMPL_PREFIX."/settings_" . $filePathVar . ".txt", '[]', LOCK_EX);
+if (!file_exists($settingsFilePath)) {
+	file_put_contents($settingsFilePath, '[]', LOCK_EX);
 	changeGameMode("toRus");
 }
-if (!file_exists(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt")) {
-	file_put_contents(TEMPL_PREFIX."/scores_" . $filePathVar . ".txt", '[]', LOCK_EX);
-}
-if (getGameModule() === null || getGameModule() === "") {
-	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
-} else {
-	$actualFileQw = "/translTraining" . getGameModule() . ".txt";
+if (!file_exists($scoresFilePath)) {
+	file_put_contents($scoresFilePath, '[]', LOCK_EX);
 }
 
 $respText = 'Текст';
@@ -76,7 +72,7 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	$respText = "Надеюсь, на фото ответ, " . $user->getFirstName() . ". Но я понимаю только текст!";
 } elseif (preg_match("/^[Пп]ожелание.+/ui", $userAnswer->getFormatAnswer())) {
 	$respText = "Пожелание принято. Спасибо, " . $user->getFirstName() . "!";
-	writeLogFile($user->getFirstName() . ": " . $userAnswer->getFormatAnswer(), false, "/message.txt");
+	writeLogFile($user->getFirstName() . ": " . $userAnswer->getFormatAnswer(), false, $userMessageFilePath);
 } elseif (preg_match("/^\*.+/i", $userAnswer->getFormatAnswer())) {
 	exit();
 } elseif ($userAnswer->getFormatAnswer() === $trueQuestion) {
@@ -95,7 +91,7 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } elseif (preg_match("/start_game/i", $userAnswer->getFormatAnswer())) {
-	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
 	$translArr = randArr(readTTFile($actualFileQw));
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
@@ -134,35 +130,33 @@ $getQuery = array(
 try {
     TG_sendMessage($getQuery);
 } catch (Exception $e) {
-	writeLogFile('PHP перехватил исключение: ' . $e->getMessage() . "\n", false, "/errors.txt");
+	writeLogFile('PHP перехватил исключение: ' . $e->getMessage() . "\n", false, $errorsFilePath);
 }
 
 //Функции
 //для записи логов недоработанных вопросов
 function writeLogFile($string, $clear = false, $fileName){
-    $log_file_name = TEMPL_PREFIX.$fileName;
     if($clear == false) {
 		$now = date("Y-m-d H:i:s");
-		file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
+		file_put_contents($fileName, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
     }
     else {
-		file_put_contents($log_file_name, '', LOCK_EX);
-        file_put_contents($log_file_name, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
+		file_put_contents($fileName, '', LOCK_EX);
+        file_put_contents($fileName, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
     }
 }
 
 //для записи копии файла вопросов
 function reWriteTTCopyFile($string){
-	global $filePathVar;
+	global $room, $translTrain_copyFilePath;
 
-	$log_file_name = TEMPL_PREFIX."/translTraining_copy" . $filePathVar . ".txt";
-	file_put_contents($log_file_name, '', LOCK_EX);
-	file_put_contents($log_file_name, print_r($string, true), FILE_APPEND | LOCK_EX);
+	file_put_contents($translTrain_copyFilePath, '', LOCK_EX);
+	file_put_contents($translTrain_copyFilePath, print_r($string, true), FILE_APPEND | LOCK_EX);
 }
 
 //для чтения файла вопросов в массив
 function readTTFile($filename){
-	$ttArray = json_decode(file_get_contents(TEMPL_PREFIX.$filename), true);
+	$ttArray = json_decode(file_get_contents($filename), true);
 	return $ttArray;
 }
 
@@ -195,42 +189,38 @@ function isContResp($string, $needle) {
 
 /* для проверки пустоты файла и выдачи массива вопросов */
 function respArrNow() {
-	global $filePathVar, $actualFileQw;
+	global $room, $actualFileQw, $translTrain_copyFilePath;
 
-	$filePath = "/translTraining_copy" . $filePathVar . ".txt";
-	if (file_get_contents(TEMPL_PREFIX.$filePath) == "[]") {
-		$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+	if (file_get_contents($translTrain_copyFilePath) == "[]") {
+		$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
 		$translArr = randArr(readTTFile($actualFileQw));
 		reWriteTTCopyFile(json_encode($translArr));
 		return $translArr;
 	} else {
-		return readTTFile($filePath);
+		return readTTFile($translTrain_copyFilePath);
 	}
-
 }
 
 //узнать мод игры
 function getGameMode(){
-	global $filePathVar;
+	global $room, $settingsFilePath;
 
-	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
-	return readTTFile($file_ChatSetting)["gameMod"];
+	return readTTFile($settingsFilePath)["gameMod"];
 }
 
 //записать мод игры
 function changeGameMode(){
-	global $filePathVar;
+	global $room, $settingsFilePath;
 
-	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
-	$chatSettingArr = readTTFile($file_ChatSetting);
+	$chatSettingArr = readTTFile($settingsFilePath);
 	$actualGameMod = getGameMode();
 	if ($actualGameMod == "toRus") {
 		$chatSettingArr["gameMod"] = "toGreek";
 	} else {
 		$chatSettingArr["gameMod"] = "toRus";
 	}
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '', LOCK_EX);
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
+	file_put_contents($settingsFilePath, '', LOCK_EX);
+	file_put_contents($settingsFilePath, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return $chatSettingArr["gameMod"];
 }
 
@@ -260,30 +250,27 @@ function getDefHinеText($arr){
 
 //get game module
 function getGameModule(){
-	global $filePathVar;
+	global $room, $settingsFilePath;
 
-	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
-	return readTTFile($file_ChatSetting)["fileGame"];
+	return readTTFile($settingsFilePath)["fileGame"];
 }
 //set game module
 function setNewGameModule($arr){
-	global $filePathVar;
+	global $room, $settingsFilePath;
 
-	$file_ChatSetting = "/settings_" . $filePathVar . ".txt";
-	$chatSettingArr = readTTFile($file_ChatSetting);
+	$chatSettingArr = readTTFile($settingsFilePath);
 
 	$chatSettingArr["fileGame"] = array_rand($arr) + 1;
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, '', LOCK_EX);
-	file_put_contents(TEMPL_PREFIX.$file_ChatSetting, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
+	file_put_contents($settingsFilePath, '', LOCK_EX);
+	file_put_contents($settingsFilePath, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return $chatSettingArr["fileGame"];
 }
 
 //users chat score
 function getChatScore($userName) {
-	global $filePathVar;
+	global $room, $scoresFilePath;
 
-	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
-	$chatScoresArr = readTTFile($file_ChatScores);
+	$chatScoresArr = readTTFile($scoresFilePath);
 
 	if (array_key_exists($userName, $chatScoresArr)) {
 		return (int) $chatScoresArr[$userName];
@@ -293,10 +280,9 @@ function getChatScore($userName) {
 }
 
 function getUserRating($userName) {
-	global $filePathVar;
+	global $room, $scoresFilePath;
 
-	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
-	$chatScoresArr = readTTFile($file_ChatScores);
+	$chatScoresArr = readTTFile($scoresFilePath);
 
 	if (array_key_exists($userName, $chatScoresArr)) {
 		$usesrScoreNumber = (int) array_search($userName, $chatScoresArr) + 1;
@@ -307,10 +293,9 @@ function getUserRating($userName) {
 }
 
 function getChatRating() {
-	global $filePathVar;
+	global $room, $scoresFilePath;
 
-	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
-	$chatScoresArr = readTTFile($file_ChatScores);
+	$chatScoresArr = readTTFile($scoresFilePath);
 	$result = "Рейтинг нашего чата: \n\n";
 	$countNum = 1;
 
@@ -337,10 +322,9 @@ function getChatRating() {
 }
 
 function setChatScore($userName, $scoreToAdd) {
-	global $filePathVar;
+	global $room, $scoresFilePath;
 
-	$file_ChatScores = "/scores_" . $filePathVar . ".txt";
-	$chatScoresArr = readTTFile($file_ChatScores);
+	$chatScoresArr = readTTFile($scoresFilePath);
 
 	if (array_key_exists($userName, $chatScoresArr)) {
 		$chatScoresArr[$userName] = (int) $chatScoresArr[$userName] + $scoreToAdd;
@@ -348,8 +332,8 @@ function setChatScore($userName, $scoreToAdd) {
 		$chatScoresArr[$userName] = 0 + $scoreToAdd;
 	}
 
-	file_put_contents(TEMPL_PREFIX.$file_ChatScores, '', LOCK_EX);
-	file_put_contents(TEMPL_PREFIX.$file_ChatScores, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND | LOCK_EX);
+	file_put_contents($scoresFilePath, '', LOCK_EX);
+	file_put_contents($scoresFilePath, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return (int) $chatScoresArr[$userName];
 }
 
