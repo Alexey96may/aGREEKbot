@@ -1,6 +1,8 @@
 <?php
 require 'app/classes/User.php';
+require 'app/classes/Room.php';
 use App\Classes\User;
+use App\Classes\Room;
 
 //Token from another file
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
@@ -19,24 +21,31 @@ define("BOTTOKEN", $secretToken);
 define("BOTID", "5687000457");
 define("CHATTTID", "-1002205650441");
 
+//Main data
 $data = file_get_contents('php://input');
 $dataArray = json_decode($data, true);
 
+//Class instances creating
 if (class_exists('App\Classes\User')) {
 	$user = new User($dataArray['message']['from']);
 } else {
-	die('Class existing Error!');
+	die('Class existing Error! Class User.');
+}
+
+if (class_exists('App\Classes\Room')) {
+	$room = new Room($dataArray['message']['chat']);
+} else {
+	die('Class existing Error! Class Room.');
 }
 
 $textMessage = trim(mb_strtolower($dataArray['message']['text']));
-$chatId = $dataArray['message']['chat']['id'];
 
 //определим переменную имени файла
 $filePathVar = '';
-if ($chatId == BOTID) {
+if ($room->getID() == BOTID) {
 	$filePathVar = "user" . $user->getID();
 } else {
-	$resultChatId = substr($chatId, 1);
+	$resultChatId = substr($room->getID(), 1);
 	$filePathVar = "chat" . $resultChatId;
 }
 
@@ -121,7 +130,7 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 }
 
 $getQuery = array(
-	'chat_id' 		=> $chatId,
+	'chat_id' 		=> $room->getID(),
 	'text'			=> $respText,
 	'parse_mode'	=> "HTML",
 );

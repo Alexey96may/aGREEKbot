@@ -10,27 +10,29 @@ class User
 
     public function __construct($fromUserArr)
     {
-        $this->id = $fromUserArr['id'];
+        $strID = strval($fromUserArr['id']);
+        $this->id = $strID;
         $this->firstName = $fromUserArr['first_name'];
         $this->lastName = $fromUserArr['last_name'];
     }
 
-    public function getID()
+    public function getID(): string
     {
+        $strID = strval($this->id);
         return $this->id;
     }
 
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function getFullName()
+    public function getFullName(): string
     {
         return $this->firstName . $this->lastName;
     }
