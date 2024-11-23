@@ -1,8 +1,10 @@
 <?php
 require 'app/classes/User.php';
 require 'app/classes/Room.php';
+require 'app/classes/UserAnswer.php';
 use App\Classes\User;
 use App\Classes\Room;
+use App\Classes\UserAnswer;
 
 //Token from another file
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
@@ -13,7 +15,7 @@ $allTheQuestionFiles = [1,2,3,4];
 //Template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
 
-//Question Price
+//True answer price
 $scoreToAdd = 1;
 
 //Access keys
@@ -26,19 +28,13 @@ $data = file_get_contents('php://input');
 $dataArray = json_decode($data, true);
 
 //Class instances creating
-if (class_exists('App\Classes\User')) {
+if (class_exists('App\Classes\User') && class_exists('App\Classes\Room') && class_exists('App\Classes\UserAnswer')) {
 	$user = new User($dataArray['message']['from']);
-} else {
-	die('Class existing Error! Class User.');
-}
-
-if (class_exists('App\Classes\Room')) {
 	$room = new Room($dataArray['message']['chat']);
+	$userAnswer = new UserAnswer($dataArray['message']['text']);
 } else {
-	die('Class existing Error! Class Room.');
+	die('Class existing Error!');
 }
-
-$textMessage = trim(mb_strtolower($dataArray['message']['text']));
 
 //определим переменную имени файла
 $filePathVar = '';
@@ -78,55 +74,55 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
 } elseif (array_key_exists("photo", $dataArray["message"])) {
 	$respText = "Надеюсь, на фото ответ, " . $user->getFirstName() . ". Но я понимаю только текст!";
-} elseif (preg_match("/^[Пп]ожелание.+/ui", $textMessage)) {
+} elseif (preg_match("/^[Пп]ожелание.+/ui", $userAnswer->getFormatAnswer())) {
 	$respText = "Пожелание принято. Спасибо, " . $user->getFirstName() . "!";
-	writeLogFile($user->getFirstName() . ": " . $textMessage, false, "/message.txt");
-} elseif (preg_match("/^\*.+/i", $textMessage)) {
+	writeLogFile($user->getFirstName() . ": " . $userAnswer->getFormatAnswer(), false, "/message.txt");
+} elseif (preg_match("/^\*.+/i", $userAnswer->getFormatAnswer())) {
 	exit();
-} elseif ($textMessage === $trueQuestion) {
+} elseif ($userAnswer->getFormatAnswer() === $trueQuestion) {
 	$respText = "Это мой вопрос, " . $user->getFirstName() . "!";
 } elseif (array_key_exists("new_chat_participant", $dataArray["message"])){
 	$respText = "Γεια σας, ".$dataArray["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 } elseif (array_key_exists("left_chat_participant", $dataArray["message"])){
 	$respText = "Пока, ".$dataArray["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
-} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/ui", $textMessage)){
+} elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/ui", $userAnswer->getFormatAnswer())){
 	$respText = "Γεια σας, " . $user->getFirstName() . "!";
-} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/ui", $textMessage)){
+} elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/ui", $userAnswer->getFormatAnswer())){
 	$respText = "Γεια σας, " . $user->getFirstName() . "! Переведите слово: " . " «<b>" . $trueQuestion. "</b>».";
-} elseif (preg_match("/game_change/i", $textMessage)){
+} elseif (preg_match("/game_change/i", $userAnswer->getFormatAnswer())){
 	changeGameMode();
 	$translArr = randArr(readTTFile($actualFileQw));
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
-} elseif (preg_match("/start_game/i", $textMessage)) {
+} elseif (preg_match("/start_game/i", $userAnswer->getFormatAnswer())) {
 	$actualFileQw = "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
 	$translArr = randArr(readTTFile($actualFileQw));
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
-} elseif (preg_match("/game_hint/i", $textMessage)) {
+} elseif (preg_match("/game_hint/i", $userAnswer->getFormatAnswer())) {
 	$respText = $user->getFirstName() . " хочет подсказку!\n" . "Это слово произошло от «<b>" . $translArr[0]["base"]. "</b>» — «<i>". $translArr[0]["baseTransl"]. "</i>».";
-} elseif (preg_match("/game_dictionary/i", $textMessage) || preg_match("/[Сс]ловарь/ui", $textMessage)) {
+} elseif (preg_match("/game_dictionary/i", $userAnswer->getFormatAnswer()) || preg_match("/[Сс]ловарь/ui", $userAnswer->getFormatAnswer())) {
 	$respText = getDefHinеText($translArr);
-} elseif (preg_match("/game_info/i", $textMessage)) {
+} elseif (preg_match("/game_info/i", $userAnswer->getFormatAnswer())) {
 	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «<b>start_game</b>».\n— взять подсказку командой «<b>game_hint</b>».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «<b>game_change</b>».\n— взять помощь словаря командой «<b>game_dictionary</b>» или словом «<b>словарь</b>» в чате.\n— узнать свой счёт в чате, своё место в рейтинге чата или топ игроков чата командами «Мой счёт», «Мой рейтинг» и «Рейтинг чата», соответственно.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ «<b>*</b>» в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: «<b>Пожелание</b>», за которым следует текст вашего пожелания.\n\nВы можете добавить бота в свой чат, наделив его правами администратора.";
-} elseif (preg_match("/[Оо]твет/ui", $textMessage)) {
+} elseif (preg_match("/[Оо]твет/ui", $userAnswer->getFormatAnswer())) {
 	$respText = $user->getFirstName() . " хочет ответ.\n" . "Но он его не получит! :)";
-} elseif (preg_match("/[Нн]е знаю/ui", $textMessage) || preg_match("/[Сс]даюсь/ui", $textMessage)) {
+} elseif (preg_match("/[Нн]е знаю/ui", $userAnswer->getFormatAnswer()) || preg_match("/[Сс]даюсь/ui", $userAnswer->getFormatAnswer())) {
 	$respText = $user->getFirstName() . ", подумайте ещё или смените вопрос командой «start_game».";
-} elseif (preg_match("/[Мм]ой рейтинг/ui", $textMessage) || preg_match("/[Уу] меня рейтинг/ui", $textMessage)) {
+} elseif (preg_match("/[Мм]ой рейтинг/ui", $userAnswer->getFormatAnswer()) || preg_match("/[Уу] меня рейтинг/ui", $userAnswer->getFormatAnswer())) {
 	$respText = getUserRating($user->getFullName() . "__" . $user->getID());
-} elseif (preg_match("/[Мм]ой сч[её]т/ui", $textMessage)) {
+} elseif (preg_match("/[Мм]ой сч[её]т/ui", $userAnswer->getFormatAnswer())) {
 	$respText = "Ваш счёт = " . getChatScore($user->getFullName() . "__" . $user->getID());
-} elseif (preg_match("/[Рр]ейтинг чата/ui", $textMessage)) {
+} elseif (preg_match("/[Рр]ейтинг чата/ui", $userAnswer->getFormatAnswer())) {
 	$respText = getChatRating();
-} elseif (isContResp($trueResp, $textMessage)) {
+} elseif (isContResp($trueResp, $userAnswer->getFormatAnswer())) {
 	array_shift($translArr);
 	reWriteTTCopyFile(json_encode($translArr));
 	$translArr = respArrNow();
 	setChatScore($user->getFullName() . "__" . $user->getID(), 1);
 	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user->getFullName() . "__" . $user->getID()) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw() . "</b>».";
 } else {
-	$respText = wrongAnswerMessage($textMessage, $trueResp, $user->getFirstName()) . " " . infinitiveMessage($textMessage, $trueQuestion) . decideOnYourAnswer($textMessage) . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
+	$respText = wrongAnswerMessage($userAnswer->getFormatAnswer(), $trueResp, $user->getFirstName()) . " " . infinitiveMessage($userAnswer->getFormatAnswer(), $trueQuestion) . decideOnYourAnswer($userAnswer->getFormatAnswer()) . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
