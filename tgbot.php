@@ -125,17 +125,17 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 } elseif (preg_match("/[Нн]е знаю/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Сс]даюсь/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = $user->getFirstName() . ", подумайте ещё или смените вопрос командой «start_game».";
 } elseif (preg_match("/[Мм]ой рейтинг/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Уу] меня рейтинг/ui", $userAnswer->getFormatUserAnswer())) {
-	$respText = getUserRating($user->getFullName() . "__" . $user->getID());
+	$respText = $user->getUserRatingMessage($scoresFilePath);
 } elseif (preg_match("/[Мм]ой сч[её]т/ui", $userAnswer->getFormatUserAnswer())) {
-	$respText = "Ваш счёт = " . getChatScore($user->getFullName() . "__" . $user->getID());
+	$respText = 'Ваш счёт = <b>' . $user->getUserScore($scoresFilePath) . '<b>';
 } elseif (preg_match("/[Рр]ейтинг чата/ui", $userAnswer->getFormatUserAnswer())) {
-	$respText = getChatRating();
+	$respText = $room->getRoomRating($scoresFilePath);
 } elseif ($userAnswer->isCorrectAnswer($trueResp)) {
 	array_shift($translArr);
 	reWriteTTCopyFile(json_encode($translArr));
 	$translArr = respArrNow();
-	setChatScore($user->getFullName() . "__" . $user->getID(), $userAnswer->getAnswerPrice());
-	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . getChatScore($user->getFullName() . "__" . $user->getID()) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw($game->getGameMode()) . "</b>».";
+	$user->setUserScore($scoresFilePath, $userAnswer->getAnswerPrice());
+	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . $user->getUserScore($scoresFilePath) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw($game->getGameMode()) . "</b>».";
 } else {
 	$respText = $userAnswer->wrongAnswerMessage($user->getFirstName(), $trueResp) . " " . infinitiveMessage($userAnswer->getFormatUserAnswer(), $trueQuestion) . decideOnYourAnswer($userAnswer->getFormatUserAnswer()) . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
@@ -240,77 +240,6 @@ function setNewGameModule($arr){
 	file_put_contents($settingsFilePath, '', LOCK_EX);
 	file_put_contents($settingsFilePath, print_r(json_encode($chatSettingArr), true)."\r\n", FILE_APPEND | LOCK_EX);
 	return $chatSettingArr["fileGame"];
-}
-
-//users chat score
-function getChatScore($userName) {
-	global $room, $scoresFilePath;
-
-	$chatScoresArr = readTTFile($scoresFilePath);
-
-	if (array_key_exists($userName, $chatScoresArr)) {
-		return (int) $chatScoresArr[$userName];
-	} else {
-		return setChatScore($userName, 0);
-	}
-}
-
-function getUserRating($userName) {
-	global $room, $scoresFilePath;
-
-	$chatScoresArr = readTTFile($scoresFilePath);
-
-	if (array_key_exists($userName, $chatScoresArr)) {
-		$usesrScoreNumber = (int) array_search($userName, $chatScoresArr) + 1;
-		return "Вы на $usesrScoreNumber месте в этом чате!";
-	} else {
-		return "Вас ещё нет в статистике этого чата! \nОтветьте правильно хотя бы на один вопрос.";
-	}
-}
-
-function getChatRating() {
-	global $room, $scoresFilePath;
-
-	$chatScoresArr = readTTFile($scoresFilePath);
-	$result = "Рейтинг нашего чата: \n\n";
-	$countNum = 1;
-
-	if (count($chatScoresArr) !== 0) {
-
-		arsort($chatScoresArr, SORT_NUMERIC);
-
-		foreach ($chatScoresArr as $key => $value) {
-			if ($countNum < 10) {
-				$symbolToCut = strpos($key, "__");
-				$originUserName = substr($key, 0, $symbolToCut);
-				$result .= $countNum . ": " . $originUserName . " - " . $value . ".\n";
-				$countNum++;
-			} else {
-				break;
-			}
-		}
-
-	} else {
-		$result = "Рейтинг этого чата пока ещё пуст.";
-	}
-
-	return $result;
-}
-
-function setChatScore($userName, $scoreToAdd) {
-	global $room, $scoresFilePath;
-
-	$chatScoresArr = readTTFile($scoresFilePath);
-
-	if (array_key_exists($userName, $chatScoresArr)) {
-		$chatScoresArr[$userName] = (int) $chatScoresArr[$userName] + $scoreToAdd;
-	} else {
-		$chatScoresArr[$userName] = 0 + $scoreToAdd;
-	}
-
-	file_put_contents($scoresFilePath, '', LOCK_EX);
-	file_put_contents($scoresFilePath, print_r(json_encode($chatScoresArr), true)."\r\n", FILE_APPEND | LOCK_EX);
-	return (int) $chatScoresArr[$userName];
 }
 
 function infinitiveMessage($userAnswer, $correctAnswer) {
