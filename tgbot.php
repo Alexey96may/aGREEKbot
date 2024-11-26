@@ -13,7 +13,7 @@ use App\Classes\Core\Logs\Log;
 //Class instances creating
 if (class_exists('App\Classes\Core\Logs\Log')) {
 	Log::setRootLogDir('./logs');
-	$log = new Log('/mylog/tgBot.log');
+	$log = new Log('/tgBot.log');
 } else {
 	die('Class existing Error!');
 }
@@ -34,10 +34,8 @@ if (class_exists('App\Classes\User') && class_exists('App\Classes\Room') && clas
 	$user = new User($dataArray['message']['from']);
 	$room = new Room($dataArray['message']['chat']);
 	$userAnswer = new UserAnswer($dataArray['message']['text']);
-
-	App\Classes\Core\Logs\Log::setRootLogDir('./logs');
-	$log = new Log('/mylog/tgBot.log');
 } else {
+	$log->log('Class existing Error! In the line' . __LINE__);
 	die('Class existing Error!');
 }
 
@@ -64,6 +62,7 @@ if (!file_exists($scoresFilePath)) {
 if (class_exists('App\Classes\Game')) {
 	$game = new Game($settingsFilePath);
 } else {
+	$log->log('Class Game existing Error! In the line' . __LINE__);
 	die('Class existing Error!');
 }
 
@@ -85,15 +84,14 @@ if ($game->getGameMode() === 'toGreek'){
 	$trueQuestion = $templTrueResp;
 }
 
-$log->log($game->getGameMode());
-
 if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticker", $dataArray["message"])){
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
 } elseif (array_key_exists("photo", $dataArray["message"])) {
 	$respText = "Надеюсь, на фото ответ, " . $user->getFirstName() . ". Но я понимаю только текст!";
 } elseif (preg_match("/^[Пп]ожелание.+/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = "Пожелание принято. Спасибо, " . $user->getFirstName() . "!";
-	writeLogFile($user->getFirstName() . ": " . $userAnswer->getFormatUserAnswer(), false, $userMessageFilePath);
+	$desireLog = new Log('/userDesires/tgBot.log');
+	$desireLog->log('--- ' . $user->getFirstName() . ' ' . $user->getLastName() . ' --- ' . $userAnswer->getUserAnswer());
 } elseif (preg_match("/^\*.+/i", $userAnswer->getFormatUserAnswer())) {
 	exit();
 } elseif ($userAnswer->getFormatUserAnswer() === $trueQuestion) {
@@ -151,22 +149,10 @@ $getQuery = array(
 try {
     TG_sendMessage($getQuery);
 } catch (Exception $e) {
-	writeLogFile('PHP перехватил исключение: ' . $e->getMessage() . "\n", false, $errorsFilePath);
+	$log->log('Exception! In the line' . __LINE__);
 }
 
 //Функции
-//для записи логов недоработанных вопросов
-function writeLogFile($string, $clear = false, $fileName){
-	$now = date("Y-m-d H:i:s");
-    if($clear == false) {
-		
-		file_put_contents($fileName, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
-    }
-    else {
-		file_put_contents($fileName, '', LOCK_EX);
-        file_put_contents($fileName, $now." ".print_r($string, true)."\r\n", FILE_APPEND | LOCK_EX);
-    }
-}
 
 //для записи копии файла вопросов
 function reWriteTTCopyFile($string){

@@ -6,14 +6,17 @@ class User
 {
     private $id;
     private $firstName;
-    private $lastName;
+    private $lastName = '';
 
     public function __construct($fromUserArr)
     {
         $strID = strval($fromUserArr['id']);
         $this->id = $strID;
         $this->firstName = $fromUserArr['first_name'];
-        $this->lastName = $fromUserArr['last_name'];
+
+        if (!empty($fromUserArr['last_name'])) {
+            $this->lastName = $fromUserArr['last_name'];
+        }
     }
 
     public function getID(): string
