@@ -1,4 +1,15 @@
 <?php
+/**
+ * The class for the user answers
+ * 
+ * Processing and displaying the user answer and optimize it for simple working with it
+ *
+ * @category aGreek Telegram Bot
+ * @version 1.1
+ * @author Alex Shulga
+ * @author Alex Shulga <shulga_alexey@vk.com>
+ * @copyright Copyright (c) 2024, Alex Shulga
+ */
 
 namespace App\Classes;
 require_once 'app/traits/TextFormatter.php';
@@ -7,22 +18,160 @@ class UserAnswer
 {
     use \App\Traits\TextFormatter;
 
-    private $originAnswer;
-    private $formatedAnswer;
+    /**
+     * Original user`s answer
+     * 
+     * @var string
+     */
+    private $userAnswer;
 
+    /**
+     * The point number to add for the user`s true answer
+     * 
+     * @var int
+     */
+    private $answerPrice = 1;
+    
     public function __construct(string $messageText)
     {
-        $this->originAnswer = $messageText;
-        $this->formatedAnswer = $this->formatText($messageText);
+        $this->userAnswer = $messageText;
     }
 
-    public function getOrigAnswer(): string
+    /**
+     * Get the origin user answer
+     * 
+     * @return string
+     */
+    public function getUserAnswer(): string
     {
-        return $this->originAnswer;
+        return $this->userAnswer;
     }
 
-    public function getFormatAnswer(): string
+    /**
+     * Get the user answer formated for the comparasment with the another formated string
+     * 
+     * @return string
+     */
+    public function getFormatUserAnswer(): string
     {
-        return $this->formatedAnswer;
+        $formatUserAnswer = $this->formatText($this->userAnswer);
+        return $formatUserAnswer;
+    }
+
+    /**
+     * Get the answer price for the user`s true answer
+     * 
+     * @return int
+     */
+    public function getAnswerPrice(): int
+    {
+        return $this->answerPrice;
+    }
+
+    /**
+     * Set the answer price for the user`s true answer
+     * 
+     * @param int $scoreToAdd
+     * @return UserAnswer
+     */
+    public function setAnswerPrice(int $scoreToAdd): UserAnswer
+    {
+        $this->answerPrice = $scoreToAdd;
+        return $this;
+    }
+
+    /**
+     * Check whether the user answer (or answers) is correct according to the $trueAnswers parameter
+     * 
+     * @param string $trueAnswers
+     * @return bool
+     */
+    public function isCorrectAnswer(string $trueAnswers): bool
+    {
+        $trueAnswerArr = explode(",", $trueAnswers);
+        $userAnswerArr = explode(",", $this->getUserAnswer());
+        $isTrueAnswer = false;
+
+        for ($i=0; $i < count($trueAnswerArr); $i++) { 
+            $trueAnswerArr[$i] = $this->formatText($trueAnswerArr[$i]);
+        }
+        for ($u=0; $u < count($userAnswerArr); $u++) { 
+            $userAnswerArr[$u] = $this->formatText($userAnswerArr[$u]);
+            if (in_array($userAnswerArr[$u], $trueAnswerArr)) {
+                $isTrueAnswer = true;
+            }
+        }
+        return $isTrueAnswer;
+    }
+
+    /**
+     * Evaluate the user answer from 0 to 1
+     * 
+     * Only one user answer will be evaluated!
+     * 
+     * @param string $trueAnswers
+     * @return float
+     */
+    private function answerRater(string $trueAnswers): float
+    {
+        $trueAnswerArr = explode(",", $trueAnswers);
+        $userAnswer = $this->getFormatUserAnswer();
+    
+        $sameLetterCount = 0;
+        $rating = null;
+        $akinnestStrings = [$userAnswer, ""];
+        $maxStringLength = null;
+    
+        for ($u=0; $u < count($trueAnswerArr); $u++) {
+            $maxCurrentStringLength = max(strlen($trueAnswerArr[$u]), strlen($userAnswer));
+            $trueAnswerArr[$u] = mb_strtolower(trim($trueAnswerArr[$u]));
+            $currentStringsArr = [$userAnswer, $trueAnswerArr[$u]];
+            $currentLetterCount = 0;
+            $currentUserAnswer = $userAnswer;
+    
+            for ($i=0; $i < $maxCurrentStringLength; $i++) { 
+                if ($trueAnswerArr[$u][$i] === $currentUserAnswer[$i]) {
+                    $currentLetterCount++;
+                } else {
+                    if (strlen($trueAnswerArr[$u]) > strlen($userAnswer)) {
+                        $currentUserAnswer = mb_substr($currentUserAnswer, 0, $i) . "*" . mb_substr($currentUserAnswer, $i);
+                    } elseif(strlen($trueAnswerArr[$u]) < strlen($currentUserAnswer)) {
+                        $trueAnswerArr[$u] = mb_substr($trueAnswerArr[$u], 0, $i) . "*" . mb_substr($trueAnswerArr[$u], $i);
+                    }
+                }
+            }
+            if ($sameLetterCount <= $currentLetterCount) {
+                $sameLetterCount = $currentLetterCount;
+                $akinnestStrings = $currentStringsArr;
+            }
+        }
+    
+        $maxStringLength = max(strlen($akinnestStrings[0]), strlen($akinnestStrings[1]));
+        $rating = $sameLetterCount / $maxStringLength;
+        $rating = floatval($rating);
+        return $rating;
+    }
+    
+    /**
+     * Get a message how precise is user`s answer
+     * 
+     * @param string $userFirstName
+     * @param string $trueAnswers
+     * @return string
+     */
+    public function wrongAnswerMessage(string $userFirstName, string $trueAnswers): string
+    {
+        $answerRating = $this->answerRater($trueAnswers);
+        $message = '';
+    
+        if ($answerRating > 0.75) {
+            $message = "Очень близко, $userFirstName! Возможно, в вашем ответе опечатка.";
+        } else if($answerRating > 0.5) {
+            $message = "Неправильно, но близко! Попытайтесь снова, $userFirstName!";
+        } else {
+            $message = "Попытайтесь снова, $userFirstName!";
+        }
+    
+        return $message;
     }
 }
