@@ -27,6 +27,13 @@ class Game
      * @var string
      */
     private $gameMode = 'toRus';
+    
+    /**
+     * The file number (its name prefix) with the Questions
+     * 
+     * @var array
+     */
+    private const QUESTION_MODULES = array(1, 2, 3, 4);
 
     public function __construct(string $settingsPath)
     {
@@ -76,6 +83,36 @@ class Game
         
         file_put_contents($settingsPath, print_r(json_encode($chatSettingsArr), true), LOCK_EX);
         return true;
+    }
+
+    /**
+     * Get the Game Module from the Setting file.
+     * 
+     * @param string $settings_path
+     * @return int
+     */
+    public function getGameModule(string $settings_path): int
+    {
+        $settingsArr = $this->fileReader($settings_path);
+        if (array_key_exists('fileGame', $settingsArr)) {
+            return (int) $settingsArr['fileGame'];
+        }
+        return -1;
+    }
+
+    /**
+     * Change the Game Module randomly and set it in the Setting file.
+     * 
+     * @param string $settings_path
+     * @return int
+     */
+    public function changeGameModule(string $settings_path): int
+    {
+        $chatSettingArr = readTTFile($settings_path);
+        $chatSettingArr['fileGame'] = array_rand(self::QUESTION_MODULES) + 1;
+        
+        file_put_contents($settings_path, print_r(json_encode($chatSettingArr), true), LOCK_EX);
+        return (int) $chatSettingArr['fileGame'];
     }
 
     /**

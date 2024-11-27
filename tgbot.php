@@ -145,10 +145,10 @@ if (class_exists('App\Classes\Game')) {
 	die('Class existing Error!');
 }
 
-if (getGameModule() === null || getGameModule() === "") {
-	$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+if ($game->getGameModule($settingsFilePath) === -1) {
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . $game->changeGameModule($settingsFilePath) . ".txt";
 } else {
-	$actualFileQw = TEMPL_PREFIX . "/translTraining" . getGameModule() . ".txt";
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . $game->getGameModule($settingsFilePath) . ".txt";
 }
 
 $respText = 'Текст';
@@ -189,7 +189,7 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw($game->getGameMode()) . "</b>».";
 } elseif (preg_match("/start_game/i", $userAnswer->getFormatUserAnswer())) {
-	$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+	$actualFileQw = TEMPL_PREFIX . "/translTraining" . $game->changeGameModule($settingsFilePath) . ".txt";
 	$translArr = randArr(readTTFile($actualFileQw));
 	reWriteTTCopyFile(json_encode($translArr));
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . getTrueQw($game->getGameMode()) . "</b>».";
@@ -267,10 +267,10 @@ function TG_sendMessage($getQuery) {
 
 /* для проверки пустоты файла и выдачи массива вопросов */
 function respArrNow() {
-	global $room, $actualFileQw, $translTrain_copyFilePath, $allTheQuestionFiles;
+	global $game, $actualFileQw, $translTrain_copyFilePath, $settingsFilePath;
 
 	if (file_get_contents($translTrain_copyFilePath) == "[]") {
-		$actualFileQw = TEMPL_PREFIX . "/translTraining" . setNewGameModule($allTheQuestionFiles) . ".txt";
+		$actualFileQw = TEMPL_PREFIX . "/translTraining" . $game->changeGameModule($settingsFilePath) . ".txt";
 		$translArr = randArr(readTTFile($actualFileQw));
 		reWriteTTCopyFile(json_encode($translArr));
 		return $translArr;
