@@ -242,6 +242,7 @@ function setNewGameModule($arr){
 	return $chatSettingArr["fileGame"];
 }
 
+//User answer restrictions
 function infinitiveMessage($userAnswer, $correctAnswer) {
     $userAnswerLastLetter = mb_substr($userAnswer, -1);
     $correctAnswerLastLetter = mb_substr($correctAnswer, -1);

@@ -174,4 +174,40 @@ class UserAnswer
     
         return $message;
     }
+
+    /**
+     * Get a restriction message about the verb translation only as infinitives
+     * 
+     * @param string $true_answers
+     * @return string
+     */
+    public function verbRestrictionMessage(string $true_answers): string
+    {
+        $userAnswerEnding = ['ю', 'у', 'сь'];
+        $russianVerbEnding = ['ть', 'ся'];
+
+            $userAnswerLastLetter = mb_substr($this->getFormatUserAnswer(), -1);
+            $userAnswerLastLetters = mb_substr($this->getFormatUserAnswer(), -2);
+            $trueAnswerLastLetters = mb_substr($this->formatText($true_answers), -2);
+            
+            if (in_array($trueAnswerLastLetters, $russianVerbEnding)) {
+                if (in_array($userAnswerLastLetter, $userAnswerEnding) || in_array($userAnswerLastLetters, $userAnswerEnding)) {
+                    return 'Пожалуйста, переводите глаголы инфинитивами...';
+                }
+            }
+        return '';
+    }
+    
+    /**
+     * Get a restriction message if there may be only one user answer.
+     * 
+     * @return string
+     */
+    public function decideOnAnswerMessage(): string
+    {
+        if (mb_strpos($this->getFormatUserAnswer(), ',') !== false) {
+            return 'Определитесь с ответом, пожалуйста.';
+        }
+        return '';
+    }
 }

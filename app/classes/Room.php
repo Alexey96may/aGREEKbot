@@ -66,7 +66,7 @@ class Room
                 if ($countNum < self::USERS_NUMBER_IN_RATING) {
                     $symbolToCut = strpos($key, "__");
                     $originUserName = substr($key, 0, $symbolToCut);
-                    $result .= "<b>" . $countNum . "</b>: " . $originUserName . " - " . $value . ".\n";
+                    $result .= "<b>" . $countNum . "</b>: " . $originUserName . " - " . $value . "\n";
                     $countNum++;
                 } else {
                     break;
