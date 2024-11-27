@@ -184,7 +184,7 @@ class UserAnswer
     public function verbRestrictionMessage(string $true_answers): string
     {
         $userAnswerEnding = ['ю', 'у', 'сь'];
-        $russianVerbEnding = ['ть', 'ся'];
+        $russianVerbEnding = ['ть', 'ся', 'ти'];
 
             $userAnswerLastLetter = mb_substr($this->getFormatUserAnswer(), -1);
             $userAnswerLastLetters = mb_substr($this->getFormatUserAnswer(), -2);
