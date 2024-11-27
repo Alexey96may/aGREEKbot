@@ -29,11 +29,90 @@ define("TEMPL_PREFIX", __DIR__."/temp");
 $data = file_get_contents('php://input');
 $dataArray = json_decode($data, true);
 
+$messageType = 'message';
+if (array_key_exists('edited_message', $dataArray) ) {
+	$messageType = 'edited_message';
+}
+
+if (array_key_exists('voice', $dataArray[$messageType])) {
+	$respText = "Просьба отвечать текстом, " . $dataArray[$messageType]['from']['first_name'] . ".";
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
+if (array_key_exists('photo', $dataArray[$messageType])) {
+	$respText = "Надеюсь, на фото ответ, " . $dataArray[$messageType]['from']['first_name'] . ". Но я принимаю только текст!";
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
+if (array_key_exists('new_chat_participant', $dataArray[$messageType])) {
+	$respText = "Γεια σας, ".$dataArray["message"]["new_chat_participant"]["first_name"]."!";
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
+if (array_key_exists('left_chat_participant', $dataArray[$messageType])) {
+	$respText = "Γεια σας, ".$dataArray["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
+if (array_key_exists('sticker', $dataArray[$messageType])) {
+	$respText = $dataArray[$messageType]['sticker']['emoji'];
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
+if (!array_key_exists('text', $dataArray[$messageType]) ) {
+	$log->log('Its not a text message!' . __LINE__);
+	$respText = "Я отвечаю только на текстовые сообщения!";
+	//Query Parameters to send
+	$getQuery = array(
+		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
+		'text'			=> $respText,
+		'parse_mode'	=> "HTML",
+	);
+
+	TG_sendMessage($getQuery);
+	die('Its not a message!');
+}
+
 //Class instances creating
 if (class_exists('App\Classes\User') && class_exists('App\Classes\Room') && class_exists('App\Classes\UserAnswer') && class_exists('App\Classes\Core\Logs\Log')) {
-	$user = new User($dataArray['message']['from']);
-	$room = new Room($dataArray['message']['chat']);
-	$userAnswer = new UserAnswer($dataArray['message']['text']);
+	$user = new User($dataArray[$messageType]['from']);
+	$room = new Room($dataArray[$messageType]['chat']);
+	$userAnswer = new UserAnswer($dataArray[$messageType]['text']);
 } else {
 	$log->log('Class existing Error! In the line' . __LINE__);
 	die('Class existing Error!');
@@ -137,7 +216,7 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	$user->setUserScore($scoresFilePath, $userAnswer->getAnswerPrice());
 	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$trueResp}». \nВаш счёт = <b>" . $user->getUserScore($scoresFilePath) . "</b>.\n\nПереведите слово: " . " «<b>" . getTrueQw($game->getGameMode()) . "</b>».";
 } else {
-	$respText = $userAnswer->wrongAnswerMessage($user->getFirstName(), $trueResp) . " " . infinitiveMessage($userAnswer->getFormatUserAnswer(), $trueQuestion) . decideOnYourAnswer($userAnswer->getFormatUserAnswer()) . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
+	$respText = $userAnswer->wrongAnswerMessage($user->getFirstName(), $trueResp) . " " . $userAnswer->verbRestrictionMessage($trueResp) . $userAnswer->decideOnAnswerMessage() . "\n\nПереведите слово: " . " «<b>" . $trueQuestion. "</b>».";
 }
 
 $getQuery = array(
@@ -242,7 +321,7 @@ function setNewGameModule($arr){
 	return $chatSettingArr["fileGame"];
 }
 
-//User answer restrictions
+//Answer restrictions
 function infinitiveMessage($userAnswer, $correctAnswer) {
     $userAnswerLastLetter = mb_substr($userAnswer, -1);
     $correctAnswerLastLetter = mb_substr($correctAnswer, -1);
