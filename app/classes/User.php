@@ -8,8 +8,20 @@ class User
     private $firstName;
     private $lastName = '';
 
-    public function __construct($fromUserArr)
+    /**
+     * The path to the scores file
+     * 
+     * @var string
+     */
+    private $scoresPath;
+
+    public function __construct($fromUserArr, string $scoresFilePath)
     {
+        $this->scoresPath = $scoresFilePath;
+        if (!file_exists($this->scoresPath)) {
+            file_put_contents($this->scoresPath, '[]', LOCK_EX);
+        }
+
         $strID = strval($fromUserArr['id']);
         $this->id = $strID;
         $this->firstName = $fromUserArr['first_name'];
@@ -22,7 +34,7 @@ class User
     public function getID(): string
     {
         $strID = strval($this->id);
-        return $this->id;
+        return $strID;
     }
 
     public function getFirstName(): string
@@ -48,21 +60,21 @@ class User
         return $this->getFullName() . "__" . $this->getID();
     }
 
-    public function getUserScore(string $scoresFilePath): int
+    public function getUserScore(): int
     {
-        $chatScoresArr = $this->fileReader($scoresFilePath);
+        $chatScoresArr = $this->fileReader($this->scoresPath);
     
         if (array_key_exists($this->getUserScoreName(), $chatScoresArr)) {
             return (int) $chatScoresArr[$this->getUserScoreName()];
         } else {
-            $this->setUserScore($this->getUserScoreName(), 0);
+            $this->setUserScore(0);
             return 0;
         }
     }
 
-    public function setUserScore(string $scoresFilePath, int $scoreToAdd): int
+    public function setUserScore(int $scoreToAdd): int
     {
-        $chatScoresArr = $this->fileReader($scoresFilePath);
+        $chatScoresArr = $this->fileReader($this->scoresPath);
     
         if (array_key_exists($this->getUserScoreName(), $chatScoresArr)) {
             $chatScoresArr[$this->getUserScoreName()] = (int) $chatScoresArr[$this->getUserScoreName()] + $scoreToAdd;
@@ -70,18 +82,18 @@ class User
             $chatScoresArr[$this->getUserScoreName()] = 0 + $scoreToAdd;
         }
 
-        file_put_contents($scoresFilePath, print_r(json_encode($chatScoresArr), true), LOCK_EX);
+        file_put_contents($this->scoresPath, print_r(json_encode($chatScoresArr), true), LOCK_EX);
         return (int) $chatScoresArr[$this->getUserScoreName()];
     }
 
-    public function getUserRatingMessage(string $scoresFilePath): string
+    public function getUserRatingMessage(): string
     {
-        $chatScoresArr = $this->fileReader($scoresFilePath);
+        $chatScoresArr = $this->fileReader($this->scoresPath);
         arsort($chatScoresArr, SORT_NUMERIC);
 
         if (array_key_exists($this->getUserScoreName(), $chatScoresArr)) {
             $userScoreNumber = (int) array_search($this->getUserScoreName(), array_keys($chatScoresArr)) + 1;
-            return "Вы на <b>$userScoreNumber месте</b> в нашем чате! Ваш счёт: <b>" . $this->getUserScore($scoresFilePath) . '</b>.';
+            return "Вы на <b>$userScoreNumber месте</b> в нашем чате! Ваш счёт: <b>" . $this->getUserScore() . '</b>.';
         } else {
             return "Вас ещё нет в статистике этого чата! \nОтветьте правильно хотя бы на один вопрос.";
         }

@@ -39,10 +39,10 @@ class UserAnswer
      */
     protected $answerType = "undefined";
     
-    // public function __construct(string $messageText)
-    // {
-    //     $this->userAnswer = $messageText;
-    // }
+    public function __construct()
+    {
+        $this->userAnswer = '';
+    }
 
     /**
      * Get the type of the user`s answer

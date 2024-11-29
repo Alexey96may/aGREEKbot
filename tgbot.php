@@ -2,6 +2,7 @@
 require_once 'app/classes/User.php';
 require_once 'app/classes/Room.php';
 require_once 'app/classes/Game.php';
+require_once 'app/classes/MessageSender.php';
 require_once 'app/classes/core/logs/Log.php';
 require_once 'app/classes/AnswerForms/UndefinedAnswer.php';
 require_once 'app/classes/AnswerForms/TextAnswer.php';
@@ -14,6 +15,7 @@ require_once 'app/classes/AnswerForms/NewParticipantAnswer.php';
 use App\Classes\User;
 use App\Classes\Room;
 use App\Classes\Game;
+use App\Classes\MessageSender;
 use App\Classes\Core\Logs\Log;
 use App\Classes\AnswerForms\UndefinedAnswer;
 use App\Classes\AnswerForms\TextAnswer;
@@ -23,7 +25,7 @@ use App\Classes\AnswerForms\StickerAnswer;
 use App\Classes\AnswerForms\LeftParticipantAnswer;
 use App\Classes\AnswerForms\NewParticipantAnswer;
 
-//Class instances creating
+//Log instance creating
 if (class_exists('App\Classes\Core\Logs\Log')) {
 	Log::setRootLogDir('./logs');
 	$log = new Log('/tgBot.log');
@@ -31,53 +33,40 @@ if (class_exists('App\Classes\Core\Logs\Log')) {
 	die('Class existing Error!');
 }
 
-//Token
+//Getting the secret token
 $secretToken = file_get_contents(__DIR__."/init/token.txt");
-define("BOTTOKEN", $secretToken);
+if (class_exists('App\Classes\MessageSender')) {
+	MessageSender::setBotToken($secretToken);
+} else {
+	die('Class existing Error!');
+}
 
-//Template file prefix
+//Defining the template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
 
-//Main data
+//Getting the main data
 $data = file_get_contents('php://input');
+if (empty($data)) {
+	die('Class existing Error!');
+}
 $dataArray = json_decode($data, true);
 
+//Getting the type of the main data: 'message' or 'edited_message'
 $messageType = 'message';
 if (array_key_exists('edited_message', $dataArray) ) {
 	$messageType = 'edited_message';
 }
 
-$userAnswer = new UndefinedAnswer();
-
-if (array_key_exists('sticker', $dataArray[$messageType])) {
-	$userAnswer = new StickerAnswer($dataArray[$messageType]['sticker']);
-}
-if (array_key_exists('voice', $dataArray[$messageType])) {
-	$userAnswer = new VoiceAnswer($dataArray[$messageType]['voice']);
-}
-if (array_key_exists('photo', $dataArray[$messageType])) {
-	$userAnswer = new PhotoAnswer($dataArray[$messageType]['photo'][0]);
-}
-if (array_key_exists('left_chat_participant', $dataArray[$messageType])) {
-	$userAnswer = new LeftParticipantAnswer($dataArray[$messageType]['left_chat_participant']);
-}
-if (array_key_exists('new_chat_participant', $dataArray[$messageType])) {
-	$userAnswer = new NewParticipantAnswer($dataArray[$messageType]['new_chat_participant']);
-}
-if (array_key_exists('text', $dataArray[$messageType])) {
-	$userAnswer = new TextAnswer($dataArray[$messageType]['text']);
-}
-
-//Class instances creating
-if (class_exists('App\Classes\User') && class_exists('App\Classes\Room')) {
-	$user = new User($dataArray[$messageType]['from']);
+//UserAnswer and Room instances creating
+if (class_exists('App\Classes\Room') && class_exists('App\Classes\AnswerForms\UndefinedAnswer')) {
+	$userAnswer = answerType($dataArray[$messageType]);
 	$room = new Room($dataArray[$messageType]['chat']);
 } else {
-	$log->log('Class existing Error! In the line' . __LINE__);
+	$log->log('Class existing Error! In the line: ' . __LINE__);
 	die('Class existing Error!');
 }
 
-//Complete file Paths according to this chat
+//Complete file Paths according to this chat room
 $settingsFilePath = TEMPL_PREFIX.'/settings_' . $room->roomIDPath() . '.txt';
 $scoresFilePath = TEMPL_PREFIX.'/scores_' . $room->roomIDPath() . '.txt';
 $translTrain_copyFilePath = TEMPL_PREFIX.'/translTraining_copy' . $room->roomIDPath() . '.txt';
@@ -85,25 +74,16 @@ $userMessageFilePath = TEMPL_PREFIX.'/message.txt';
 $logFilePath = TEMPL_PREFIX.'/log.txt';
 $errorsFilePath = TEMPL_PREFIX.'/errors.txt';
 
-//Setting and Score files forming
-if (!file_exists($settingsFilePath)) {
-	file_put_contents($settingsFilePath, '[]', LOCK_EX);
-}
-if (!file_exists($scoresFilePath)) {
-	file_put_contents($scoresFilePath, '[]', LOCK_EX);
-}
-if (!file_exists($translTrain_copyFilePath)) {
-	file_put_contents($translTrain_copyFilePath, '[]', LOCK_EX);
-}
-
-//Class instances creating
-if (class_exists('App\Classes\Game')) {
+//Game and User instances creating
+if (class_exists('App\Classes\Game') && class_exists('App\Classes\User') ) {
 	$game = new Game($settingsFilePath, $translTrain_copyFilePath);
+	$user = new User($dataArray[$messageType]['from'], $scoresFilePath);
 } else {
-	$log->log('Class Game existing Error! In the line' . __LINE__);
+	$log->log('Class existing Error! In the line: ' . __LINE__);
 	die('Class existing Error!');
 }
 
+//Main dependancies
 if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
 } elseif ($userAnswer->getAnswerType() === 'voice') {
@@ -146,41 +126,43 @@ if ($userAnswer->getAnswerType() === 'undefined'){
 } elseif (preg_match("/[Нн]е знаю/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Сс]даюсь/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = $user->getFirstName() . ", подумайте ещё или смените вопрос командой «start_game».";
 } elseif (preg_match("/[Мм]ой рейтинг/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Уу] меня рейтинг/ui", $userAnswer->getFormatUserAnswer())) {
-	$respText = $user->getUserRatingMessage($scoresFilePath);
+	$respText = $user->getUserRatingMessage();
 } elseif (preg_match("/[Мм]ой сч[её]т/ui", $userAnswer->getFormatUserAnswer())) {
-	$respText = "Ваш счёт = <b>" . $user->getUserScore($scoresFilePath) . "</b>";
+	$respText = "Ваш счёт = <b>" . $user->getUserScore() . "</b>";
 } elseif (preg_match("/[Рр]ейтинг чата/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = $room->getRoomRating($scoresFilePath);
 } elseif ($userAnswer->isCorrectAnswer($game->getTrueResponse())) {
 	$game->userWin();
-	$user->setUserScore($scoresFilePath, $userAnswer->getAnswerPrice());
-	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$game->getTrueResponse()}». \nВаш счёт = <b>" . $user->getUserScore($scoresFilePath) . "</b>.\n\nПереведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
+	$user->setUserScore($userAnswer->getAnswerPrice());
+	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$game->getTrueResponse()}». \nВаш счёт = <b>" . $user->getUserScore() . "</b>.\n\nПереведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
 } else {
 	$respText = $userAnswer->wrongAnswerMessage($user->getFirstName(), $game->getTrueResponse()) . " " . $userAnswer->verbRestrictionMessage($game->getTrueResponse()) . $userAnswer->decideOnAnswerMessage() . "\n\nПереведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
 }
 
-$getQuery = array(
-	'chat_id' 		=> $room->getID(),
-	'text'			=> $respText,
-	'parse_mode'	=> "HTML",
-);
-
+//Sending the response to the API
+$messageSender = new MessageSender($room->getID(), $respText);
 try {
-    TG_sendMessage($getQuery);
+	$messageSender->sendMessage();
 } catch (Exception $e) {
-	$log->log('Exception! In the line' . __LINE__);
+	$log->log('Exception! In the line: ' . __LINE__ . ', with text: ' . $e->getMessage());
 }
 
-//Functions
+/* Get the answer type */
+function answerType($messageTypeArray) {
 
-/* Message Sender */
-function TG_sendMessage($getQuery) {
-    $ch = curl_init("https://api.telegram.org/bot". BOTTOKEN ."/sendMessage?" . http_build_query($getQuery));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    $res = curl_exec($ch);
-    curl_close($ch);
-
-    return $res;
+	if (array_key_exists('sticker', $messageTypeArray)) {
+		return new StickerAnswer($messageTypeArray['sticker']);
+	} elseif (array_key_exists('voice', $messageTypeArray)) {
+		return new VoiceAnswer($messageTypeArray['voice']);
+	} elseif (array_key_exists('photo', $messageTypeArray)) {
+		return new PhotoAnswer($messageTypeArray['photo'][0]);
+	} elseif (array_key_exists('left_chat_participant', $messageTypeArray)) {
+		return new LeftParticipantAnswer($messageTypeArray['left_chat_participant']);
+	} elseif (array_key_exists('new_chat_participant', $messageTypeArray)) {
+		return new NewParticipantAnswer($messageTypeArray['new_chat_participant']);
+	} elseif (array_key_exists('text', $messageTypeArray)) {
+		return new TextAnswer($messageTypeArray['text']);
+	} else {
+		return new UndefinedAnswer();
+	}
 }

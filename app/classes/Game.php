@@ -67,6 +67,15 @@ class Game
         $this->settingsPath = $settingsPath;
         $this->translCopyFilePath = $translCopyFilePath;
 
+        if (!file_exists($this->settingsPath)) {
+            file_put_contents($this->settingsPath, '[]', LOCK_EX);
+            $this->startGame();
+        }
+        if (!file_exists($this->translCopyFilePath)) {
+            file_put_contents($this->translCopyFilePath, '[]', LOCK_EX);
+            $this->startGame();
+        }
+
         $settings_array = $this->fileReader($this->settingsPath);
         if (!isset($settings_array['gameMod'])) {
             $settings_array['gameMod'] = $this->gameMode;
