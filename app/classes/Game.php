@@ -137,7 +137,7 @@ class Game
      */
     public function changeGameModule(): int
     {
-        $chatSettingArr = readTTFile($this->settingsPath);
+        $chatSettingArr = $this->fileReader($this->settingsPath);
         $chatSettingArr['fileGame'] = array_rand(self::QUESTION_MODULES) + 1;
         
         file_put_contents($this->settingsPath, print_r(json_encode($chatSettingArr), true), LOCK_EX);

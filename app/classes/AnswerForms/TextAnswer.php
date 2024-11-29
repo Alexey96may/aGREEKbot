@@ -1,8 +1,8 @@
 <?php
 /**
- * The class for the user answers
+ * The class for the user answer Text Form
  * 
- * Processing and displaying the user answer and optimize it for the simple work with it
+ * Processing and displaying the user`s text message and optimize it for the simple work with it.
  *
  * @category aGreek Telegram Bot
  * @version 1.1
@@ -11,57 +11,23 @@
  * @copyright Copyright (c) 2024, Alex Shulga
  */
 
-namespace App\Classes;
-require_once 'app/traits/TextFormatter.php';
+namespace App\Classes\AnswerForms;
+use App\Classes\UserAnswer;
 
-class UserAnswer
+require_once 'app/classes/UserAnswer.php';
+
+class TextAnswer extends UserAnswer
 {
-    use \App\Traits\TextFormatter;
-
     /**
-     * Original user`s answer
+     * The type of the user`s answer.
      * 
      * @var string
      */
-    protected $userAnswer = '';
-
-    /**
-     * The number of points to add for the user`s true answer
-     * 
-     * @var int
-     */
-    protected $answerPrice = 1;
-
-    /**
-     * The type of the user`s answer: text, voice, video, sticker, etc.
-     * 
-     * @var int
-     */
-    protected $answerType = "undefined";
+    protected $answerType = "text";
     
-    // public function __construct(string $messageText)
-    // {
-    //     $this->userAnswer = $messageText;
-    // }
-
-    /**
-     * Get the type of the user`s answer
-     * 
-     * @return string
-     */
-    public function getAnswerType(): string
+    public function __construct(string $messageText)
     {
-        return $this->answerType;
-    }
-
-    /**
-     * Get the origin user answer
-     * 
-     * @return string
-     */
-    public function getUserAnswer(): string
-    {
-        return $this->userAnswer;
+        $this->userAnswer = $messageText;
     }
 
     /**
@@ -73,28 +39,6 @@ class UserAnswer
     {
         $formatUserAnswer = $this->formatText($this->userAnswer);
         return $formatUserAnswer;
-    }
-
-    /**
-     * Get the answer price for the user`s true answer
-     * 
-     * @return int
-     */
-    public function getAnswerPrice(): int
-    {
-        return $this->answerPrice;
-    }
-
-    /**
-     * Set the answer price for the user`s true answer
-     * 
-     * @param int $scoreToAdd
-     * @return UserAnswer
-     */
-    public function setAnswerPrice(int $scoreToAdd): UserAnswer
-    {
-        $this->answerPrice = $scoreToAdd;
-        return $this;
     }
 
     /**

@@ -1,14 +1,27 @@
 <?php
 require_once 'app/classes/User.php';
 require_once 'app/classes/Room.php';
-require_once 'app/classes/UserAnswer.php';
 require_once 'app/classes/Game.php';
 require_once 'app/classes/core/logs/Log.php';
+require_once 'app/classes/AnswerForms/UndefinedAnswer.php';
+require_once 'app/classes/AnswerForms/TextAnswer.php';
+require_once 'app/classes/AnswerForms/VoiceAnswer.php';
+require_once 'app/classes/AnswerForms/PhotoAnswer.php';
+require_once 'app/classes/AnswerForms/StickerAnswer.php';
+require_once 'app/classes/AnswerForms/LeftParticipantAnswer.php';
+require_once 'app/classes/AnswerForms/NewParticipantAnswer.php';
+
 use App\Classes\User;
 use App\Classes\Room;
-use App\Classes\UserAnswer;
 use App\Classes\Game;
 use App\Classes\Core\Logs\Log;
+use App\Classes\AnswerForms\UndefinedAnswer;
+use App\Classes\AnswerForms\TextAnswer;
+use App\Classes\AnswerForms\VoiceAnswer;
+use App\Classes\AnswerForms\PhotoAnswer;
+use App\Classes\AnswerForms\StickerAnswer;
+use App\Classes\AnswerForms\LeftParticipantAnswer;
+use App\Classes\AnswerForms\NewParticipantAnswer;
 
 //Class instances creating
 if (class_exists('App\Classes\Core\Logs\Log')) {
@@ -34,92 +47,35 @@ if (array_key_exists('edited_message', $dataArray) ) {
 	$messageType = 'edited_message';
 }
 
-if (array_key_exists('voice', $dataArray[$messageType])) {
-	$respText = "Просьба отвечать текстом, " . $dataArray[$messageType]['from']['first_name'] . ".";
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
-}
-
-if (array_key_exists('photo', $dataArray[$messageType])) {
-	$respText = "Надеюсь, на фото ответ, " . $dataArray[$messageType]['from']['first_name'] . ". Но я принимаю только текст!";
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
-}
-
-if (array_key_exists('new_chat_participant', $dataArray[$messageType])) {
-	$respText = "Γεια σας, ".$dataArray["message"]["new_chat_participant"]["first_name"]."!";
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
-}
-
-if (array_key_exists('left_chat_participant', $dataArray[$messageType])) {
-	$respText = "Γεια σας, ".$dataArray["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
-}
+$userAnswer = new UndefinedAnswer();
 
 if (array_key_exists('sticker', $dataArray[$messageType])) {
-	$respText = $dataArray[$messageType]['sticker']['emoji'];
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
+	$userAnswer = new StickerAnswer($dataArray[$messageType]['sticker']);
 }
-
-if (!array_key_exists('text', $dataArray[$messageType]) ) {
-	$log->log('Its not a text message!' . __LINE__);
-	$respText = "Я отвечаю только на текстовые сообщения!";
-	//Query Parameters to send
-	$getQuery = array(
-		'chat_id' 		=> $dataArray[$messageType]['chat']['id'],
-		'text'			=> $respText,
-		'parse_mode'	=> "HTML",
-	);
-
-	TG_sendMessage($getQuery);
-	die('Its not a message!');
+if (array_key_exists('voice', $dataArray[$messageType])) {
+	$userAnswer = new VoiceAnswer($dataArray[$messageType]['voice']);
+}
+if (array_key_exists('photo', $dataArray[$messageType])) {
+	$userAnswer = new PhotoAnswer($dataArray[$messageType]['photo'][0]);
+}
+if (array_key_exists('left_chat_participant', $dataArray[$messageType])) {
+	$userAnswer = new LeftParticipantAnswer($dataArray[$messageType]['left_chat_participant']);
+}
+if (array_key_exists('new_chat_participant', $dataArray[$messageType])) {
+	$userAnswer = new NewParticipantAnswer($dataArray[$messageType]['new_chat_participant']);
+}
+if (array_key_exists('text', $dataArray[$messageType])) {
+	$userAnswer = new TextAnswer($dataArray[$messageType]['text']);
 }
 
 //Class instances creating
-if (class_exists('App\Classes\User') && class_exists('App\Classes\Room') && class_exists('App\Classes\UserAnswer') && class_exists('App\Classes\Core\Logs\Log')) {
+if (class_exists('App\Classes\User') && class_exists('App\Classes\Room')) {
 	$user = new User($dataArray[$messageType]['from']);
 	$room = new Room($dataArray[$messageType]['chat']);
-	$userAnswer = new UserAnswer($dataArray[$messageType]['text']);
 } else {
 	$log->log('Class existing Error! In the line' . __LINE__);
 	die('Class existing Error!');
 }
-
-//Array for the question modules
-$allTheQuestionFiles = [1,2,3,4];
 
 //Complete file Paths according to this chat
 $settingsFilePath = TEMPL_PREFIX.'/settings_' . $room->roomIDPath() . '.txt';
@@ -148,10 +104,18 @@ if (class_exists('App\Classes\Game')) {
 	die('Class existing Error!');
 }
 
-if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticker", $dataArray["message"])){
+if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
-} elseif (array_key_exists("photo", $dataArray["message"])) {
+} elseif ($userAnswer->getAnswerType() === 'voice') {
+	$respText = "У вас прекрасный голос, " . $user->getFirstName() . "! Но я жду текстовый ответ.";
+} elseif ($userAnswer->getAnswerType() === 'sticker') {
+	$respText = $userAnswer->getEmoji();
+} elseif ($userAnswer->getAnswerType() === 'photo') {
 	$respText = "Надеюсь, на фото ответ, " . $user->getFirstName() . ". Но я понимаю только текст!";
+} elseif ($userAnswer->getAnswerType() === "new_chat_participant"){
+	$respText = "Γεια σας, " . $userAnswer->getFirstName() . "! Переведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
+} elseif ($userAnswer->getAnswerType() === "left_chat_participant"){
+	$respText = "Αντίο, " . $userAnswer->getFirstName() . ". Στο καλό!";
 } elseif (preg_match("/^[Пп]ожелание.+/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = "Пожелание принято. Спасибо, " . $user->getFirstName() . "!";
 	$desireLog = new Log('/userDesires/tgBot.log');
@@ -160,10 +124,6 @@ if (array_key_exists("voice", $dataArray["message"]) || array_key_exists("sticke
 	exit();
 } elseif ($userAnswer->getFormatUserAnswer() === $game->getTrueQuestion()) {
 	$respText = "Это мой вопрос, " . $user->getFirstName() . "!";
-} elseif (array_key_exists("new_chat_participant", $dataArray["message"])){
-	$respText = "Γεια σας, ".$dataArray["message"]["new_chat_participant"]["first_name"]."! Переведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
-} elseif (array_key_exists("left_chat_participant", $dataArray["message"])){
-	$respText = "Пока, ".$dataArray["message"]["left_chat_participant"]["first_name"].". Всего хорошего!";
 } elseif (preg_match("/([Пп]ока)|([Дд]о свидан)/ui", $userAnswer->getFormatUserAnswer())){
 	$respText = "Γεια σας, " . $user->getFirstName() . "!";
 } elseif (preg_match("/([Пп]ривет)|([Κκ]αλημέρα)|([Κκ]αλησπέρα)/ui", $userAnswer->getFormatUserAnswer())){
@@ -211,9 +171,9 @@ try {
 	$log->log('Exception! In the line' . __LINE__);
 }
 
-//Функции
+//Functions
 
-/* для отправки текстовых сообщений */
+/* Message Sender */
 function TG_sendMessage($getQuery) {
     $ch = curl_init("https://api.telegram.org/bot". BOTTOKEN ."/sendMessage?" . http_build_query($getQuery));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
