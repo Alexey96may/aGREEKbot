@@ -217,6 +217,12 @@ class Game
     {
         $this->unsetOptionsDone();
 
+        if (count($this->respArrNow()) < 4) {
+            $actualGamePath = TEMPL_PREFIX . "/translTraining" . $this->changeGameModule() . ".txt";
+            $translArray = $this->arrRandomizer($this->fileReader($actualGamePath));
+            $this->fileWriter($this->translCopyFilePath, json_encode($translArray));
+        }
+
         $newQuestionArr = $this->respArrNow();
         array_shift($newQuestionArr);
         $this->fileWriter($this->translCopyFilePath, json_encode($newQuestionArr));
@@ -328,7 +334,7 @@ class Game
             foreach ($actualResponses as $value) {
                 $sanitizeValue = $this->formatText($value[$responseKey]);
                 $sanitizeValue = explode(',', $sanitizeValue)[0];
-                $cutTrueResponse = mb_strcut($trueAnswer, 0, $trueAnswerLength);
+                $cutTrueResponse = mb_substr($trueAnswer, -$trueAnswerLength);
 
                 if (preg_match("/$cutTrueResponse(.*?)/ui", $sanitizeValue) && !in_array($sanitizeValue, $usedWords)) {
                     array_push($optionsArray, $sanitizeValue);
