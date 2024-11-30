@@ -129,7 +129,9 @@ class MessageSender
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HEADER, false);
 
-        curl_exec($ch);
+        $resp = curl_exec($ch);
         curl_close($ch);
+
+        return $resp;
     }
 }

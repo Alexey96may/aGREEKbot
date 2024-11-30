@@ -215,6 +215,8 @@ class Game
      */
     public function userWin(): bool
     {
+        $this->unsetOptionsDone();
+
         $newQuestionArr = $this->respArrNow();
         array_shift($newQuestionArr);
         $this->fileWriter($this->translCopyFilePath, json_encode($newQuestionArr));
@@ -230,6 +232,8 @@ class Game
         $actualGamePath = TEMPL_PREFIX . "/translTraining" . $this->changeGameModule() . ".txt";
         $translArray = $this->arrRandomizer($this->fileReader($actualGamePath));
         $this->fileWriter($this->translCopyFilePath, json_encode($translArray));
+        
+        $this->unsetOptionsDone();
 
         $this->setTrueResponse();
         $this->setTrueQuestion();
@@ -241,6 +245,41 @@ class Game
     {
         shuffle($array);
         return $array;
+    }
+
+    public function areOptionsDone(): bool
+    {
+        $settings_array = $this->fileReader($this->settingsPath);
+        if (isset($settings_array['areOptionsDone'])) {
+            if ($settings_array['areOptionsDone'] === 'nope') {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function getTrueOption()
+    {
+        if ($this->areOptionsDone()) {
+            $settings_array = $this->fileReader($this->settingsPath);
+            return $this->formatText($settings_array['areOptionsDone']);
+        }
+        return false;
+    }
+    
+    public function setOptionsDone(int $true_option)
+    {
+        $settings_array = $this->fileReader($this->settingsPath);
+        $settings_array['areOptionsDone'] = $true_option;
+        $this->fileWriter($this->settingsPath, json_encode($settings_array));
+    }
+    
+    public function unsetOptionsDone()
+    {
+        $settings_array = $this->fileReader($this->settingsPath);
+        $settings_array['areOptionsDone'] = 'nope';
+        $this->fileWriter($this->settingsPath, json_encode($settings_array));
     }
 
     public function getDictionaryMessage(): string
@@ -264,6 +303,66 @@ class Game
             $actualPath = TEMPL_PREFIX . "/translTraining" . $this->getGameModule() . ".txt";
         }
         return $actualPath;
+    }
+
+    public function selectFourOptions(): array
+    {
+        $trueAnswer = $this->getTrueResponse();
+        $trueAnswer = explode(',', $trueAnswer)[0];
+        $trueAnswerLength = mb_strlen($trueAnswer);
+        $actualResponses = $this->arrRandomizer($this->respArrNow());
+        array_shift($actualResponses);
+        shuffle($actualResponses);
+
+        $responseKey = '';
+        if ($this->getGameMode() == 'toRus') {
+            $responseKey = 'translation';
+        } else {
+            $responseKey = 'word';
+        }
+
+        $optionsArray = [$trueAnswer];
+        $usedWords = [$trueAnswer];
+
+        while ($trueAnswerLength > 0) {
+            foreach ($actualResponses as $value) {
+                $sanitizeValue = $this->formatText($value[$responseKey]);
+                $sanitizeValue = explode(',', $sanitizeValue)[0];
+                $cutTrueResponse = mb_strcut($trueAnswer, 0, $trueAnswerLength);
+
+                if (preg_match("/$cutTrueResponse(.*?)/ui", $sanitizeValue) && !in_array($sanitizeValue, $usedWords)) {
+                    array_push($optionsArray, $sanitizeValue);
+                    array_push($usedWords, $sanitizeValue);
+                    if (count($optionsArray) === 4) {
+                        break 2;
+                    }
+                }
+            }
+            $trueAnswerLength = $trueAnswerLength - 1;
+        }
+
+        if (count($optionsArray) !== 4) {
+            while (count($optionsArray) < 4) {
+            	if (count($actualResponses) === 0) {
+            		
+            		array_push($optionsArray, '-');
+            		continue;
+            	}
+
+                $sanitizeValue = $this->formatText($actualResponses[0][$responseKey]);
+                $sanitizeValue = explode(',', $sanitizeValue)[0];
+
+            	if (!in_array($sanitizeValue, $usedWords)) {
+            		array_push($optionsArray, $sanitizeValue);
+            	}
+            	array_shift($actualResponses);
+            }
+        }
+
+		shuffle($optionsArray);
+        $this->setOptionsDone(array_search($trueAnswer, $optionsArray)+1);
+
+        return $optionsArray;
     }
 
     public function respArrNow(): array

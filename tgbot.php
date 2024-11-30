@@ -93,6 +93,14 @@ if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
 } elseif ($userAnswer->getAnswerType() === 'voice') {
 	$respText = "У вас прекрасный голос, " . $user->getFirstName() . "! Но я жду текстовый ответ.";
+
+	// $newQueryArray = ['peer' => $userAnswer->getFileID(), 'msg_id' => $dataArray[$messageType]['message_id']];
+
+	// $messageSender = new MessageSender($room->getID(), $respText);
+	// $resp = $messageSender->setMethod('messages.transcribedAudio')->setQueryArray($newQueryArray)->sendMessage();
+	// $dataewsr = json_decode($resp, true)['result']['text'];
+	// $log->log(json_encode($dataewsr));
+
 } elseif ($userAnswer->getAnswerType() === 'sticker') {
 	$respText = $userAnswer->getEmoji();
 } elseif ($userAnswer->getAnswerType() === 'photo') {
@@ -101,7 +109,7 @@ if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Γεια σας, " . $userAnswer->getFirstName() . "! Переведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
 } elseif ($userAnswer->getAnswerType() === "left_chat_participant"){
 	$respText = "Αντίο, " . $userAnswer->getFirstName() . ". Στο καλό!";
-} elseif ($userAnswer->isCorrectAnswer($game->getTrueResponse())) {
+} elseif ($userAnswer->isCorrectAnswer($game->getTrueResponse()) || $userAnswer->getFormatUserAnswer() === $game->getTrueOption()) {
 	$game->userWin();
 	$user->setUserScore($userAnswer->getAnswerPrice());
 	$respText = "Правильно, " . $user->getFirstName() . "! Ответ был: «{$game->getTrueResponse()}». \nВаш счёт = <b>" . $user->getUserScore() . "</b>.\n\nПереведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
@@ -138,10 +146,20 @@ if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Игра началась!\n\nПереведите слово: " . " «<b>" . $game->getTrueQuestion() . "</b>».";
 } elseif (preg_match("/game_hint/i", $userAnswer->getFormatUserAnswer())) {
 	$respText = $user->getFirstName() . " хочет подсказку!\n" . "Это слово произошло от «<b>" . $game->respArrNow()[0]["base"]. "</b>» — «<i>". $game->respArrNow()[0]["baseTransl"]. "</i>».";
+} elseif (preg_match("/game_options/i", $userAnswer->getFormatUserAnswer())) {
+	if (!$game->areOptionsDone()) {
+		$fourOptionsArr = $game->selectFourOptions();
+		for ($i = 0; $i < count($fourOptionsArr); $i++) { 
+			$fourOptionsArr[$i] = mb_strtoupper(mb_substr($fourOptionsArr[$i], 0, 1)) . mb_substr($fourOptionsArr[$i], 1);
+		}
+		$respText = " Варианты ответа для " . $user->getFirstName() . "!\n" . "Слово «<b>" . $game->getTrueQuestion() . "</b>» означает: \n\n" . "<b>1. </b>" . ucfirst($fourOptionsArr[0]) . "\n" . "<b>2. </b>" . ucfirst($fourOptionsArr[1]) . "\n" . "<b>3. </b>" . ucfirst($fourOptionsArr[2]) . "\n" . "<b>4. </b>" . ucfirst($fourOptionsArr[3]);
+	} else {
+		$respText = "Варианты ответа уже были даны, " . $user->getFirstName() . "!\n" . "Переведите слово: «<b>" . $game->getTrueQuestion() . "</b>»";
+	}
 } elseif (preg_match("/game_dictionary/i", $userAnswer->getFormatUserAnswer()) || preg_match("/[Сс]ловарь/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = $game->getDictionaryMessage();
 } elseif (preg_match("/game_info/i", $userAnswer->getFormatUserAnswer())) {
-	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой «<b>start_game</b>».\n— взять подсказку командой «<b>game_hint</b>».\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой «<b>game_change</b>».\n— взять помощь словаря командой «<b>game_dictionary</b>» или словом «<b>словарь</b>» в чате.\n— узнать свой счёт в чате, своё место в рейтинге чата или топ игроков чата командами «Мой счёт», «Мой рейтинг» и «Рейтинг чата», соответственно.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ «<b>*</b>» в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: «<b>Пожелание</b>», за которым следует текст вашего пожелания.\n— добавьте <b>свои вопросы</b> для викторины, написав с начала строки символ: «<b>#</b>», за которым укажите свои слова для викторины, желательно с переводом, в любом формате.\n\nВы можете добавить бота в свой чат, наделив его правами администратора, или общаться с ним напрямую.";
+	$respText = "<b>Информация об игре!</b>\n\nВы можете:\n— перезапустить игру, если хотите изменить вопрос, командой <b>/start_game</b>.\n— взять подсказку этимологии слова командой <b>/game_hint</b>.\n— взять 4 варианта ответа командой <b>/game_options</b>.\n— изменить режим игры (перевод слов с греческого на русский, или наоборот) командой <b>/game_change</b>.\n— взять помощь словаря командой <b>/game_dictionary</b> или словом <b>словарь</b> в чате.\n— узнать свой счёт в чате, своё место в рейтинге чата или топ игроков чата командами <b>Мой счёт</b>, <b>Мой рейтинг</b> и <b>Рейтинг чата</b>, соответственно.\n\n— если вы не хотите, чтобы бот вам отвечал, ставьте символ <b>*</b> в начало вашего сообщения в чате.\n— оставьте пожелание для развития игры или бота, написав с начала строки: <b>Пожелание</b>, за которым следует текст вашего пожелания.\n— добавьте <b>Свои Вопросы</b> для викторины, написав с начала строки символ: <b>#</b>, за которым укажите свои слова для викторины, желательно с переводом, в любом формате.\n\nВы можете добавить бота в свой чат, наделив его правами администратора, или общаться с ним напрямую.";
 } elseif (preg_match("/[Оо]твет/ui", $userAnswer->getFormatUserAnswer())) {
 	$respText = $user->getFirstName() . " хочет ответ.\n" . "Но он его не получит! :)";
 } elseif (preg_match("/[Нн]е знаю/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Сс]даюсь/ui", $userAnswer->getFormatUserAnswer()) || preg_match("/[Δδ]εν ξέρω/ui", $userAnswer->getFormatUserAnswer())) {
