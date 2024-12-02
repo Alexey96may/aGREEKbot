@@ -12,7 +12,7 @@
  */
 
 namespace App\Classes;
-require_once 'app/traits/TextFormatter.php';
+require_once 'app/Traits/TextFormatter.php';
 
 use Exception;
 

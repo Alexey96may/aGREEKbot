@@ -13,7 +13,7 @@
 
 namespace App\Classes\AnswerForms;
 
-require_once 'app/classes/AnswerForms/FilesAnswer.php';
+require_once 'app/Classes/AnswerForms/FilesAnswer.php';
 
 class PhotoAnswer extends FilesAnswer
 {

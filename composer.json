@@ -1,10 +1,7 @@
 {
     "autoload": {
-        "name": "aGreek/telegramBot",
-        "type": "telegram bot",
-        "description": "Telegram bot for the translation quiz game.",
         "psr-4": {
-            "App\\": "app"
+            "App\\": "app/"
         }
     }
 }

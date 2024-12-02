@@ -1,18 +1,6 @@
 <?php
-require_once 'app/classes/User.php';
-require_once 'app/classes/Room.php';
-require_once 'app/classes/Game.php';
-require_once 'app/classes/MessageSender.php';
-require_once 'app/classes/core/logs/Log.php';
-require_once 'app/classes/AnswerForms/UndefinedAnswer.php';
-require_once 'app/classes/AnswerForms/TextAnswer.php';
-require_once 'app/classes/AnswerForms/VoiceAnswer.php';
-require_once 'app/classes/AnswerForms/PhotoAnswer.php';
-require_once 'app/classes/AnswerForms/StickerAnswer.php';
-require_once 'app/classes/AnswerForms/LeftParticipantAnswer.php';
-require_once 'app/classes/AnswerForms/NewParticipantAnswer.php';
 
-// require_once 'vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Classes\User;
 use App\Classes\Room;
@@ -63,13 +51,13 @@ if (array_key_exists('edited_message', $dataArray) ) {
 }
 
 //UserAnswer and Room instances creating
-if (class_exists('App\Classes\Room') && class_exists('App\Classes\AnswerForms\UndefinedAnswer')) {
-	$userAnswer = answerType($dataArray[$messageType]);
-	$room = new Room($dataArray[$messageType]['chat']);
-} else {
-	$log->log('Class existing Error! In the line: ' . __LINE__);
-	die('Class existing Error!');
-}
+	try {
+		$userAnswer = answerType($dataArray[$messageType]);
+		$room = new Room($dataArray[$messageType]['chat']);
+	} catch (\Throwable $th) {
+		$log->log('Class existing Error! In the line: ' . __LINE__ . '  Error:' . $th->getMessage());
+		die('Class existing Error!');
+	}
 
 //Complete file Paths according to this chat room
 $settingsFilePath = TEMPL_PREFIX.'/settings_' . $room->roomIDPath() . '.txt';
@@ -93,14 +81,6 @@ if ($userAnswer->getAnswerType() === 'undefined'){
 	$respText = "Просьба отвечать текстом, " . $user->getFirstName() . ".";
 } elseif ($userAnswer->getAnswerType() === 'voice') {
 	$respText = "У вас прекрасный голос, " . $user->getFirstName() . "! Но я жду текстовый ответ.";
-
-	// $newQueryArray = ['peer' => $userAnswer->getFileID(), 'msg_id' => $dataArray[$messageType]['message_id']];
-
-	// $messageSender = new MessageSender($room->getID(), $respText);
-	// $resp = $messageSender->setMethod('messages.transcribedAudio')->setQueryArray($newQueryArray)->sendMessage();
-	// $dataewsr = json_decode($resp, true)['result']['text'];
-	// $log->log(json_encode($dataewsr));
-
 } elseif ($userAnswer->getAnswerType() === 'sticker') {
 	$respText = $userAnswer->getEmoji();
 } elseif ($userAnswer->getAnswerType() === 'photo') {

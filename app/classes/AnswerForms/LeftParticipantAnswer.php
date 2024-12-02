@@ -13,7 +13,7 @@
 
 namespace App\Classes\AnswerForms;
 
-require_once 'app/classes/AnswerForms/ParticipantAnswer.php';
+require_once 'app/Classes/AnswerForms/ParticipantAnswer.php';
 
 class LeftParticipantAnswer extends ParticipantAnswer
 {
