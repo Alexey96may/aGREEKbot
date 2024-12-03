@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Warning":6,"Tests\\Unit\\RoomTest::testFailure":3},"times":{"Warning":0.006,"Tests\\Unit\\RoomTest::testFailure":0.007,"Tests\\Unit\\RoomTest::testIsChatRoom":0.007}}
