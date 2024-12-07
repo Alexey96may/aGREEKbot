@@ -1,1 +1,1 @@
-{"version":1,"defects":{"Warning":6,"Tests\\Unit\\RoomTest::testFailure":3},"times":{"Warning":0.006,"Tests\\Unit\\RoomTest::testFailure":0.007,"Tests\\Unit\\RoomTest::testIsChatRoom":0.007}}
+{"version":1,"defects":{"Warning":6,"Tests\\Unit\\RoomTest::testFailure":3,"Tests\\Unit\\RoomTest::testGetID":4,"RoomTest::testGetID":3},"times":{"Warning":0.006,"Tests\\Unit\\RoomTest::testFailure":0.007,"Tests\\Unit\\RoomTest::testIsChatRoom":0.463,"Tests\\Unit\\RoomTest::testGetID":0.007,"RoomTest::testGetID":0.631,"RoomTest::testGetID2":0}}
