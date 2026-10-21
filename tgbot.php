@@ -15,6 +15,26 @@ use App\Classes\AnswerForms\StickerAnswer;
 use App\Classes\AnswerForms\LeftParticipantAnswer;
 use App\Classes\AnswerForms\NewParticipantAnswer;
 
+// Простой парсер .env без зависимостей
+function loadEnv(string $path): array
+{
+    $env = [];
+    if (!is_file($path)) {
+        return $env;
+    }
+    foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || str_starts_with($line, '#')) {
+            continue;
+        }
+        [$key, $value] = array_pad(explode('=', $line, 2), 2, '');
+        $env[trim($key)] = trim($value, " \t\n\r\0\x0B\"'");
+    }
+    return $env;
+}
+
+$env = loadEnv(__DIR__ . '/.env');
+
 //Log instance creating
 if (class_exists('App\Classes\Core\Logs\Log')) {
 	Log::setRootLogDir('./logs');
@@ -24,7 +44,10 @@ if (class_exists('App\Classes\Core\Logs\Log')) {
 }
 
 //Getting the secret token
-$secretToken = file_get_contents(__DIR__."/init/token.txt");
+$secretToken = $env['TG_BOT_TOKEN'] ?? null;
+if (empty($secretToken)) {
+	die('TG_BOT_TOKEN is not set in .env');
+}
 if (class_exists('App\Classes\MessageSender')) {
 	MessageSender::setBotToken($secretToken);
 } else {
@@ -34,8 +57,12 @@ if (class_exists('App\Classes\MessageSender')) {
 //Defining the template file prefix
 define("TEMPL_PREFIX", __DIR__."/temp");
 
-//Defining the ADMIN id file prefix to send him some user messages
-define("ADMIN_ID", file_get_contents(__DIR__."/init/creator_id.txt"));
+//Defining the ADMIN id
+$adminId = $env['TG_ADMIN_ID'] ?? null;
+if (empty($adminId)) {
+	die('TG_ADMIN_ID is not set in .env');
+}
+define("ADMIN_ID", $adminId);
 
 //Getting the main data
 $data = file_get_contents('php://input');

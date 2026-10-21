@@ -1,5 +1,6 @@
 /init
 /vendor
 /temp
+.env
 ToDo.txt
 phpunit.xml
