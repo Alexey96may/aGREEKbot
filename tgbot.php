@@ -37,7 +37,8 @@ $env = loadEnv(__DIR__ . '/.env');
 
 //Log instance creating
 if (class_exists('App\Classes\Core\Logs\Log')) {
-	Log::setRootLogDir('./logs');
+	Log::setRootLogDir(__DIR__ . '/logs');
+
 	$log = new Log('/tgBot.log');
 } else {
 	die('Class existing Error!');
