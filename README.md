@@ -2,6 +2,15 @@
 
 A Telegram bot for learning Greek vocabulary through a quiz game. Users translate words between Greek and Russian, earn points, compete in chat leaderboards, and can request hints, multiple-choice options, or dictionary definitions. The bot works both in private chats and group chats (as an administrator).
 
+---
+
+## 🔗 Links
+
+- **Bot in Telegram:** [@aGreekBot](https://t.me/aGreekBot) — private chat.
+- **Group chat (Russian → Greek mode):** [aGreek_translBot_intoRus](https://t.me/aGreek_translBot_intoRus) — you can join and try the game.
+
+---
+
 Built with **pure PHP** (no framework), using **Composer** only for PSR-4 autoloading and PHPUnit for tests. It runs as a **Telegram webhook** — Telegram sends updates to a public HTTPS endpoint, and the bot responds via the Telegram Bot API.
 
 ---
